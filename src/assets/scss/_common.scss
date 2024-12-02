@@ -1,0 +1,132 @@
+/*----------------------------------------*/
+
+/*  1. Template default CSS
+/*----------------------------------------*/
+
+/*-- Common Style --*/
+
+*,
+*::after,
+*::before {
+	box-sizing: border-box;
+}
+
+a,
+button,
+img,
+input,
+span {
+	transition: all 0.3s ease 0s;
+}
+
+*:focus {
+	outline: none !important;
+}
+
+a:focus {
+	text-decoration: none;
+
+	color: inherit;
+	outline: none;
+}
+
+a:hover {
+	text-decoration: none;
+}
+
+button,
+input[type='submit'] {
+	cursor: pointer;
+}
+
+ul {
+	margin: 0;
+	padding: 0;
+
+	list-style: outside none none;
+}
+
+/*--
+    - Common Classes
+-----------------------------------------*/
+
+.bg-img {
+	background-position: center center;
+	background-size: cover;
+}
+
+/* slider img bounce */
+
+@-webkit-keyframes bounce-img {
+	0% {
+		transform: translateY(0);
+
+		opacity: 1;
+	}
+	50% {
+		transform: translateY(20px);
+
+		opacity: 1;
+	}
+	100% {
+		transform: translateY(0);
+
+		opacity: 1;
+	}
+}
+
+@keyframes bounce-img {
+	0% {
+		transform: translateY(0);
+
+		opacity: 1;
+	}
+	50% {
+		transform: translateY(20px);
+
+		opacity: 1;
+	}
+	100% {
+		transform: translateY(0);
+
+		opacity: 1;
+	}
+}
+
+@keyframes snow {
+	0% {
+		background-position:
+			0 0,
+			0 0,
+			0 0;
+	}
+	100% {
+		background-position:
+			500px 1000px,
+			400px 400px,
+			300px 300px;
+	}
+}
+.effect-snow {
+	animation: snow 20s linear infinite;
+}
+
+.body-effect {
+	position: absolute;
+	z-index: 0;
+	top: 0;
+	left: 0;
+
+	width: 100%;
+	height: 100%;
+
+	background-color: rgba(0, 0, 0, 0);
+}
+
+.fullpage-slider-wrapper {
+	.Navigation {
+		.Navigation-Anchor {
+			background-color: #333 !important;
+		}
+	}
+}
