@@ -66,6 +66,10 @@
 	}
 }
 
+#nprogress .bar {
+	background: hsl(var(--primary)) !important;
+}
+
 ::-webkit-scrollbar {
 	width: 20px;
 }

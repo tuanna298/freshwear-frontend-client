@@ -116,7 +116,7 @@ const product = {
 	],
 }
 
-export const ProductDetail = () => {
+const ProductDetail = () => {
 	return (
 		<Fragment>
 			<HeaderPlacholder />
@@ -474,3 +474,5 @@ export const ProductDetail = () => {
 		</Fragment>
 	)
 }
+
+export default ProductDetail

@@ -1,107 +1,20 @@
+import { Product, ProductClient } from '@/schemas/product.schema'
+import ProductHelper from '@/shared/helpers/product.helper'
+import { HttpError, useList } from '@refinedev/core'
 import { Check, Heart, ShoppingCart, Shuffle, Trash2 } from 'lucide-react'
 import { Button } from '../ui/button'
 import { NumberField } from './number-field'
 
-const products = [
-	{
-		id: 1,
-		name: 'Classic T-Shirt',
-		price: 250,
-		image: 'https://picsum.photos/700/1000',
-		sizes: ['S', 'M', 'L', 'XL'],
-		colors: ['red', 'white', 'black'],
-	},
-	{
-		id: 2,
-		name: 'Running Shoes',
-		price: 1200,
-		image: 'https://picsum.photos/700/1000',
-		sizes: ['6', '7', '8', '9', '10'],
-		colors: ['blue', 'gray', 'black'],
-	},
-	{
-		id: 3,
-		name: 'Leather Jacket',
-		price: 3500,
-		image: 'https://picsum.photos/700/1000',
-		sizes: ['M', 'L', 'XL'],
-		colors: ['black', 'brown'],
-	},
-	{
-		id: 4,
-		name: 'Casual Cap',
-		price: 150,
-		image: 'https://picsum.photos/700/1000',
-		sizes: ['One Size'],
-		colors: ['green', 'white', 'black'],
-	},
-	{
-		id: 5,
-		name: 'Denim Jeans',
-		price: 800,
-		image: 'https://picsum.photos/700/1000',
-		sizes: ['30', '32', '34', '36'],
-		colors: ['blue', 'black', 'gray'],
-	},
-	{
-		id: 6,
-		name: 'Sneakers',
-		price: 950,
-		image: 'https://picsum.photos/700/1000',
-		sizes: ['5', '6', '7', '8', '9'],
-		colors: ['pink', 'white', 'black'],
-	},
-	{
-		id: 7,
-		name: 'Winter Coat',
-		price: 4500,
-		image: 'https://picsum.photos/700/1000',
-		sizes: ['M', 'L', 'XL', 'XXL'],
-		colors: ['brown', 'black', 'gray'],
-	},
-	{
-		id: 8,
-		name: 'Woolen Scarf',
-		price: 300,
-		image: 'https://picsum.photos/700/1000',
-		sizes: ['One Size'],
-		colors: ['purple', 'white', 'black'],
-	},
-	{
-		id: 9,
-		name: 'Sports Watch',
-		price: 2500,
-		image: 'https://picsum.photos/700/1000',
-		sizes: ['One Size'],
-		colors: ['gold', 'black', 'silver'],
-	},
-	{
-		id: 10,
-		name: 'Backpack',
-		price: 2000,
-		image: 'https://picsum.photos/700/1000',
-		sizes: ['One Size'],
-		colors: ['red', 'blue', 'gray'],
-	},
-	{
-		id: 11,
-		name: 'Sunglasses',
-		price: 1000,
-		image: 'https://picsum.photos/700/1000',
-		sizes: ['One Size'],
-		colors: ['black', 'brown', 'blue'],
-	},
-	{
-		id: 12,
-		name: 'Formal Shirt',
-		price: 700,
-		image: 'https://picsum.photos/700/1000',
-		sizes: ['S', 'M', 'L', 'XL'],
-		colors: ['white', 'blue', 'gray'],
-	},
-]
-
 export const ProductGrid = () => {
+	const { data } = useList<Product, HttpError>({
+		resource: 'product',
+		pagination: {
+			pageSize: 12,
+		},
+	})
+
+	const products = data?.data ? ProductHelper.transform(data.data) : []
+
 	return (
 		<div className="m-auto max-w-[1540px] pr-[50px] ps-[50px] pt-[100px]">
 			{/* title */}
@@ -122,26 +35,22 @@ export const ProductGrid = () => {
 }
 
 type ProductGridSingleProps = {
-	product: {
-		id: number
-		name: string
-		price: number
-		image: string
-		sizes: string[]
-		colors: string[]
-	}
+	product: ProductClient
 }
 
 export const ProductGridSingle = ({
-	product: { id, name, image, price, sizes, colors },
+	product: { id, name, image, price, variation },
 }: ProductGridSingleProps) => {
+	const sizes = variation.flatMap((v) => v.size.map((s) => s))
+	const colors = variation.map((v) => v.color)
+
 	return (
 		<div className="h-full">
 			{/* product wrapper */}
 			<div className="relative z-20 overflow-hidden rounded-xl">
 				{/* product image */}
 				<img
-					src={image}
+					src={image[0]}
 					alt={`image-product-${id}`}
 					className="h-full w-full object-cover object-center"
 				/>
@@ -162,7 +71,7 @@ export const ProductGridSingle = ({
 				{/* sizes list */}
 				<div className="absolute left-0 right-0 z-20 flex items-center justify-center bg-black/30 text-center">
 					{sizes.map((size) => (
-						<span key={size}>{size}</span>
+						<span key={size.id}>{size.name}</span>
 					))}
 				</div>
 			</div>
@@ -176,12 +85,12 @@ export const ProductGridSingle = ({
 					{name}
 				</a>
 				{/* price */}
-				<NumberField className="font-bold" value={price} />
+				<NumberField className="font-bold" value={price.min} />
 				{/* colors list */}
 				<ul className="mb-0 mt-1 flex list-none flex-wrap gap-2 ps-0">
 					{colors.map((color) => (
 						<li
-							key={color}
+							key={color.id}
 							className="relative flex h-[26px] w-[26px] cursor-pointer items-center justify-center rounded-full border border-gray-200 p-[3px]"
 						>
 							{/* tooltip */}
@@ -189,7 +98,7 @@ export const ProductGridSingle = ({
 							<span
 								className="inline-block h-[18px] w-[18px] rounded-full border-[3px] border-transparent"
 								style={{
-									backgroundColor: color,
+									backgroundColor: color.code,
 								}}
 							/>
 							{/* color image */}

@@ -1,0 +1,38 @@
+import { lazy } from 'react'
+
+const Home = lazy(async () => {
+	await new Promise((r) => setTimeout(r, 300))
+	return import('./home')
+})
+
+const Shop = lazy(async () => {
+	await new Promise((r) => setTimeout(r, 300))
+	return import('./shop')
+})
+
+const ProductDetail = lazy(async () => {
+	await new Promise((r) => setTimeout(r, 300))
+	return import('./product-detail')
+})
+
+const ViewCart = lazy(async () => {
+	await new Promise((r) => setTimeout(r, 300))
+	return import('./view-cart')
+})
+
+const Wishlist = lazy(async () => {
+	await new Promise((r) => setTimeout(r, 300))
+	return import('./wishlist')
+})
+
+const Checkout = lazy(async () => {
+	await new Promise((r) => setTimeout(r, 300))
+	return import('./checkout')
+})
+
+const MyAccount = lazy(async () => {
+	await new Promise((r) => setTimeout(r, 300))
+	return import('./my-account')
+})
+
+export { Checkout, Home, MyAccount, ProductDetail, Shop, ViewCart, Wishlist }
