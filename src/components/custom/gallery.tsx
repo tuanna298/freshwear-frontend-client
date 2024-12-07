@@ -1,9 +1,27 @@
+import { Product } from '@/schemas/product.schema'
+import ProductHelper from '@/shared/helpers/product.helper'
+import { HttpError, useList } from '@refinedev/core'
 import { ShoppingBag } from 'lucide-react'
 import { Button } from '../ui/button'
 import { Card, CardContent } from '../ui/card'
 import { PageSection, PageSectionHeader } from './page'
 
 const Gallery = () => {
+	const { data } = useList<Product, HttpError>({
+		resource: 'product',
+		pagination: {
+			pageSize: 12,
+		},
+		sorters: [
+			{
+				field: 'created_at',
+				order: 'asc',
+			},
+		],
+	})
+
+	const products = data?.data ? ProductHelper.transform(data.data) : []
+
 	return (
 		<PageSection>
 			<PageSectionHeader
@@ -11,14 +29,14 @@ const Gallery = () => {
 				description="Sản phẩm mới dành riêng cho bạn trẻ năng động."
 			/>
 			<div className="flex gap-[7px]">
-				{Array.from({ length: 5 }).map((_, index) => (
-					<Card key={index} className="group flex-grow shadow-none">
+				{products.map((product) => (
+					<Card key={product.id} className="group flex-grow shadow-none">
 						<CardContent className="relative flex aspect-square items-center justify-center overflow-hidden rounded-xl border-none p-0">
 							<div className="image-gallery relative h-full w-full overflow-hidden">
 								<img
-									src="https://picsum.photos/700/1000"
-									alt={`image-gallery-${index}`}
-									className=" h-full w-full object-cover transition-all duration-300 group-hover:brightness-75"
+									src={product.image[0]}
+									alt={`image-gallery-${product.id}`}
+									className="h-full w-full object-cover transition-all duration-300 group-hover:brightness-75"
 								/>
 								<Button
 									size="icon"

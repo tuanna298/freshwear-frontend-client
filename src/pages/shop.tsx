@@ -1,7 +1,7 @@
 import Dots from '@/components/custom/dots'
 import { HeaderPlacholder } from '@/components/custom/header'
 import { PageSection } from '@/components/custom/page'
-import { ProductGridSingle } from '@/components/custom/product-grid'
+import { ProductGridSingle } from '@/components/custom/product/product-grid'
 import { Button } from '@/components/ui/button'
 import {
 	Pagination,

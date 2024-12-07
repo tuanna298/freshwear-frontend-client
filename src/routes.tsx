@@ -1,6 +1,7 @@
 import { Suspense } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import { Checkout, Home, MyAccount, ProductDetail, Wishlist } from './pages'
+import Compare from './pages/compare'
 import { AppLayout } from './shared/layouts'
 
 export default () => (
@@ -59,6 +60,14 @@ export default () => (
 				element={
 					<Suspense>
 						<MyAccount />
+					</Suspense>
+				}
+			/>
+			<Route
+				path="/compare"
+				element={
+					<Suspense>
+						<Compare />
 					</Suspense>
 				}
 			/>

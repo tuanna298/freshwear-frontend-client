@@ -39,7 +39,7 @@ function StarRating({
 				const styledIconProps: LucideProps = {
 					onMouseEnter: () => !showcase && !disabled && setValue!(i + 1),
 					className: cn(
-						'fill-primary stroke-primary size-5',
+						'size-5 fill-yellow-500 stroke-yellow-500',
 						{
 							'opacity-50 pointer-events-none': disabled,
 							'transition-transform duration-300 hover:scale-110':

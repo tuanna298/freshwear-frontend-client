@@ -34,7 +34,7 @@ export const Header = () => {
 	return (
 		<div
 			className={cn(
-				'fixed left-0 right-0 top-0 z-50 grid min-h-24 grid-cols-12 items-center px-[40px] align-middle transition-all duration-300',
+				'fixed left-0 right-0 top-0 z-50 grid min-h-24 !w-[100vw] grid-cols-12 items-center px-[40px] align-middle transition-all duration-300',
 				isScrolled ? 'bg-white text-black shadow-md' : 'bg-transparent',
 				isScrolled ? 'py-4' : 'py-6',
 				// !isHomePage && !isScrolled && 'relative',

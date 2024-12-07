@@ -25,6 +25,11 @@ const Wishlist = lazy(async () => {
 	return import('./wishlist')
 })
 
+const Compare = lazy(async () => {
+	await new Promise((r) => setTimeout(r, 300))
+	return import('./compare')
+})
+
 const Checkout = lazy(async () => {
 	await new Promise((r) => setTimeout(r, 300))
 	return import('./checkout')
@@ -35,4 +40,13 @@ const MyAccount = lazy(async () => {
 	return import('./my-account')
 })
 
-export { Checkout, Home, MyAccount, ProductDetail, Shop, ViewCart, Wishlist }
+export {
+	Checkout,
+	Compare,
+	Home,
+	MyAccount,
+	ProductDetail,
+	Shop,
+	ViewCart,
+	Wishlist,
+}

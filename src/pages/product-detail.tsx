@@ -1,7 +1,7 @@
 import { HeaderPlacholder } from '@/components/custom/header'
 import { NumberField } from '@/components/custom/number-field'
 import { PageSection } from '@/components/custom/page'
-import { ProductGridSingle } from '@/components/custom/product-grid'
+import { ProductGridSingle } from '@/components/custom/product/product-grid'
 import {
 	Carousel,
 	CarouselMainContainer,
@@ -30,7 +30,6 @@ import {
 	Plus,
 	Ship,
 	Shuffle,
-	Star,
 	UndoDot,
 	WashingMachine,
 } from 'lucide-react'
@@ -180,7 +179,6 @@ const ProductDetail = () => {
 						<StarRating
 							value={4}
 							iconProps={{ className: 'fill-yellow-500 stroke-yellow-500' }}
-							icon={Star}
 						/>
 						{/* description  */}
 						<p>

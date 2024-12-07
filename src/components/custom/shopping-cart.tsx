@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button'
 import {
 	Sheet,
+	SheetClose,
 	SheetContent,
 	SheetFooter,
 	SheetHeader,
@@ -32,10 +33,12 @@ const ShoppingCart = () => {
 				</Button>
 			</SheetTrigger>
 			<SheetContent className="flex w-full !max-w-[477px] flex-col">
-				<div className="flex h-full flex-col overflow-hidden">
-					<SheetHeader className="flex flex-shrink-0 !flex-row justify-between">
+				<div className="flex h-full flex-col gap-3 overflow-hidden">
+					<SheetHeader className="flex flex-shrink-0 !flex-row items-center justify-between align-middle">
 						<SheetTitle>Giỏ hàng</SheetTitle>
-						<X />
+						<SheetClose className="!m-0">
+							<X className="!m-0 cursor-pointer" />
+						</SheetClose>
 					</SheetHeader>
 
 					{/* Scrollable Sheet body */}
