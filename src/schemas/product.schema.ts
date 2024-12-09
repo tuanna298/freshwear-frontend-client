@@ -1,7 +1,7 @@
 import ZodUtil from '@/lib/zod.util'
 import { BaseDTO } from '@/shared/common/interfaces'
 import { z } from 'zod'
-import { Attribute, attributeSchema } from './attribute.schema'
+import { attributeSchema } from './attribute.schema'
 import { Color, colorSchema } from './color.schema'
 
 export const productDetailSchema = z.object({
@@ -57,7 +57,7 @@ export type ProductClient = {
 export interface Variation {
 	color: Color
 	image: string[]
-	size: Attribute[]
+	size: SizeClient[]
 }
 
 export interface SizeClient {

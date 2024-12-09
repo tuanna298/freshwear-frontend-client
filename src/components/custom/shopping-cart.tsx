@@ -8,16 +8,22 @@ import {
 	SheetTitle,
 	SheetTrigger,
 } from '@/components/ui/sheet'
+import ProductHelper from '@/shared/helpers/product.helper'
+import { useCartStore } from '@/shared/hooks/use-cart-store'
 import { Minus, Plus, ShoppingBag, X } from 'lucide-react'
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Separator } from '../ui/separator'
 import { NumberField } from './number-field'
 
 const ShoppingCart = () => {
+	const [isOpen, setIsOpen] = useState(false)
 	const navigate = useNavigate()
+	const { items, decrease, add, deleteOne } = useCartStore()
+	const totalCartPrice = ProductHelper.getTotalCartPrice(items)
 
 	return (
-		<Sheet>
+		<Sheet open={isOpen} onOpenChange={setIsOpen}>
 			<SheetTrigger asChild>
 				<Button
 					size="icon"
@@ -27,7 +33,7 @@ const ShoppingCart = () => {
 					<div className="relative">
 						<ShoppingBag size={18} />
 						<div className="absolute -right-2 -top-2 rounded-full bg-destructive px-[5px] py-[1px] text-xs font-bold text-white">
-							4
+							{items.length}
 						</div>
 					</div>
 				</Button>
@@ -55,60 +61,75 @@ const ShoppingCart = () => {
 
 						{/* cart items */}
 						<div>
-							{Array.from({ length: 10 }).map((_, index) => (
-								<div key={index}>
+							{items.map((item, index) => (
+								<div key={item.id}>
 									<div className="my-0 flex gap-[24px] px-0 py-[20px]">
 										{/* image */}
 										<Link
-											to={'product-detail/1'}
+											to={`product-detail/${item.id}`}
 											className="inline-block h-[110px] w-[80px] cursor-pointer text-primary no-underline transition-[all_0.3s_ease]"
 										>
 											<img
-												src="https://picsum.photos/700/1000"
-												alt="cart-image-1"
+												src={item.image}
+												alt={`cart-image-${item.id}`}
 												className="h-full w-full max-w-full object-cover align-middle text-transparent"
 											/>
 										</Link>
 
 										<div>
 											<Link
-												to={'product-detail/1'}
+												to={`product-detail/${item.id}`}
 												className="block cursor-pointer text-base text-primary no-underline transition-[all_0.3s_ease]"
 											>
-												Product name
+												{item.name}
 											</Link>
 											<div className="mt-[6px] text-[12px] leading-[19px]">
-												Color
+												{item.color.name} / {item.size.name}
 											</div>
 											<NumberField
-												value={0}
+												value={item.size.price}
 												className="mt-[6px] font-bold leading-[14px]"
 											/>
 											{/* cart buttons */}
 											<div className="mt-[10px] flex items-center gap-[12px]">
 												<div className="flex h-[30px] w-[86px] justify-between overflow-hidden rounded-[3px] bg-[#f2f2f2] text-[0.875rem]">
-													<span className="flex h-[30px] w-[27px] cursor-pointer items-center justify-center text-primary transition-[all_0.3s_ease]">
+													<span
+														className="user-select-none flex h-[30px] w-[27px] cursor-pointer select-none items-center justify-center text-primary transition-[all_0.3s_ease]"
+														onClick={() => decrease(item)}
+													>
 														<Minus size={20} />
 													</span>
 													<input
 														type="text"
 														min={1}
-														value={1}
+														value={item.quantity}
 														name="number"
 														className="h-[30px] w-[30px] border-0 bg-transparent p-0 text-center text-[12px] font-bold leading-[30px] text-primary"
+														readOnly
 													/>
-													<span className="flex h-[30px] w-[27px] cursor-pointer items-center justify-center text-primary transition-[all_0.3s_ease]">
+													<span
+														className="user-select-none flex h-[30px] w-[27px] cursor-pointer select-none items-center justify-center text-primary transition-[all_0.3s_ease]"
+														onClick={() =>
+															add({
+																...item,
+																quantity: 1,
+															})
+														}
+													>
 														<Plus size={20} />
 													</span>
 												</div>
 
-												<div className="cursor-pointer text-[12px] leading-[19px] text-primary underline">
+												<div
+													className="cursor-pointer text-[12px] leading-[19px] text-primary underline"
+													onClick={() => deleteOne(item.id)}
+												>
 													Xóa
 												</div>
 											</div>
 										</div>
 									</div>
-									{index !== 9 && <Separator />}
+									{index !== items.length - 1 && <Separator />}
 								</div>
 							))}
 						</div>
@@ -120,7 +141,7 @@ const ShoppingCart = () => {
 							<div className="text-[20px]">Tổng cộng:</div>
 							<NumberField
 								className="text-[20px] font-bold leading-[32px]"
-								value={0}
+								value={totalCartPrice}
 							/>
 						</div>
 						<Separator className="!my-4" />
@@ -130,11 +151,21 @@ const ShoppingCart = () => {
 								variant="outline"
 								className="w-full rounded-[3px]"
 								type="button"
-								onClick={() => navigate('/view-cart')}
+								onClick={() => {
+									navigate('/view-cart')
+									setIsOpen(false)
+								}}
 							>
 								Giỏ hàng
 							</Button>
-							<Button className="w-full rounded-[3px]" type="button">
+							<Button
+								className="w-full rounded-[3px]"
+								type="button"
+								onClick={() => {
+									navigate('/checkout')
+									setIsOpen(false)
+								}}
+							>
 								Thanh toán
 							</Button>
 						</div>

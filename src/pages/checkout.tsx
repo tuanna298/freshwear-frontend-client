@@ -2,9 +2,24 @@ import { HeaderPlacholder } from '@/components/custom/header'
 import { NumberField } from '@/components/custom/number-field'
 import RequiredDot from '@/components/custom/required-dot'
 import { Button } from '@/components/ui/button'
+import { Order } from '@/schemas/order.schema'
+import ProductHelper from '@/shared/helpers/product.helper'
+import { useCartStore } from '@/shared/hooks/use-cart-store'
 import { Fragment } from 'react'
+import { SubmitHandler, useForm } from 'react-hook-form'
 
 const Checkout = () => {
+	const { items } = useCartStore()
+	const totalPrice = ProductHelper.getTotalCartPrice(items)
+
+	const {
+		register,
+		handleSubmit,
+		watch,
+		formState: { errors },
+	} = useForm<Order>()
+	const onSubmit: SubmitHandler<Order> = (data) => console.log(data)
+
 	return (
 		<Fragment>
 			<HeaderPlacholder />
@@ -29,7 +44,7 @@ const Checkout = () => {
 						<h5 className="mb-[20px] text-[28px] font-[500px] leading-[33.6px]">
 							Thông tin đơn hàng
 						</h5>
-						<form id="form-checkout">
+						<form id="form-checkout" onSubmit={handleSubmit(onSubmit)}>
 							<fieldset className="mb-[30px] block">
 								<label
 									htmlFor="full_name"
@@ -44,6 +59,9 @@ const Checkout = () => {
 									id="full_name"
 									placeholder="Nguyễn Văn A"
 									className="m-0 mt-[10px] w-full rounded-[3px] border bg-white px-[18px] py-[12px] text-[14px] font-[400] leading-[24px] shadow-none outline-0 transition-[all_0.3s_ease] "
+									{...register('full_name', {
+										required: 'Vui lòng nhập họ và tên',
+									})}
 								/>
 							</fieldset>
 							<fieldset className="mb-[30px] block">
@@ -57,6 +75,9 @@ const Checkout = () => {
 									id="address"
 									placeholder="---"
 									className="m-0 mt-[10px] w-full rounded-[3px] border bg-white px-[18px] py-[12px] text-[14px] font-[400] leading-[24px] shadow-none outline-0 transition-[all_0.3s_ease] "
+									{...register('address', {
+										required: 'Vui lòng nhập địa chỉ',
+									})}
 								/>
 							</fieldset>
 							<fieldset className="mb-[30px] block">
@@ -72,6 +93,9 @@ const Checkout = () => {
 									required
 									id="phone_number"
 									className="m-0 mt-[10px] w-full rounded-[3px] border bg-white px-[18px] py-[12px] text-[14px] font-[400] leading-[24px] shadow-none outline-0 transition-[all_0.3s_ease] "
+									{...register('phone_number', {
+										required: 'Vui lòng nhập số điện thoại',
+									})}
 								/>
 							</fieldset>
 							<fieldset className="mb-[30px] block">
@@ -84,6 +108,9 @@ const Checkout = () => {
 									required
 									id="email"
 									className="m-0 mt-[10px] w-full rounded-[3px] border bg-white px-[18px] py-[12px] text-[14px] font-[400] leading-[24px] shadow-none outline-0 transition-[all_0.3s_ease] "
+									{...register('email', {
+										required: 'Vui lòng nhập email',
+									})}
 								/>
 							</fieldset>
 							<fieldset className="block">
@@ -102,31 +129,31 @@ const Checkout = () => {
 						<h5 className="mb-[20px] text-[28px] font-bold leading-[33.6px]">
 							Đơn hàng của bạn
 						</h5>
-						<form
+						<div
 							id="checkout-cart-widget"
 							className="grid gap-[20px] rounded-[2.5px] bg-[#fbfbfc] p-[30px]"
 						>
 							<ul className="mb-0 list-none ps-0">
-								{Array.from({ length: 3 }).map((_) => (
+								{items.map((item) => (
 									<li className="mb-[15px] flex items-center justify-between gap-[15px]">
 										<figure className="relative h-[64px] w-[64px] rounded-[3px] border">
 											<img
-												src="https://picsum.photos/700/1000"
+												src={item.image || '/assets/img/other/placeholder.jpg'}
 												alt="img-product-index"
 												className="h-full w-full max-w-full object-contain align-middle text-transparent"
 											/>
 											<span className="absolute -right-[8px] -top-[8px] flex h-[20px] w-[20px] items-center justify-center rounded-full bg-[#666] text-[12px] text-white">
-												1
+												{item.quantity}
 											</span>
 										</figure>
 										<div className="flex flex-grow items-center justify-between">
 											<div>
-												<p>Product name</p>
+												<p>{item.name}</p>
 												<span className="text-[12px] leading-[18px] text-primary/50">
-													Color / Size
+													{item.color.name}/ {item.size.name}
 												</span>
 											</div>
-											<NumberField value={0} />
+											<NumberField value={item.size.price} />
 										</div>
 									</li>
 								))}
@@ -138,7 +165,7 @@ const Checkout = () => {
 								</h6>
 								<NumberField
 									className="text-[20px] font-bold leading-[30px]"
-									value={0}
+									value={totalPrice}
 								/>
 							</div>
 
@@ -147,7 +174,9 @@ const Checkout = () => {
 									type="radio"
 									required
 									id="transfer"
-									checked
+									{...register('payment_method', {
+										required: 'Vui lòng chọn phương thức thanh toán',
+									})}
 									className="before:transform-[scale(0)] checked:before:transform-[scale(1)] relative inline-flex h-[20px] w-[20px] min-w-[16px] cursor-pointer appearance-none items-center justify-center rounded-full border bg-transparent outline-0 before:absolute before:text-[8px] before:text-white before:opacity-0 before:transition-[all_0.3s_ease] before:content-['✔'] checked:bg-destructive checked:text-destructive checked:before:opacity-100"
 								/>
 								<label htmlFor="transfer" className="mt-[2px] text-sm">
@@ -159,7 +188,9 @@ const Checkout = () => {
 									type="radio"
 									required
 									id="cod"
-									checked={false}
+									{...register('payment_method', {
+										required: 'Vui lòng chọn phương thức thanh toán',
+									})}
 									className="before:transform-[scale(0)] checked:before:transform-[scale(1)] relative inline-flex h-[20px] w-[20px] min-w-[16px] cursor-pointer appearance-none items-center justify-center rounded-full border bg-transparent outline-0 before:absolute before:text-[8px] before:text-white before:opacity-0 before:transition-[all_0.3s_ease] before:content-['✔'] checked:bg-destructive checked:text-destructive checked:before:opacity-100"
 								/>
 								<label htmlFor="cod" className="mt-[2px] text-sm">
@@ -168,10 +199,13 @@ const Checkout = () => {
 							</div>
 
 							{/* place order button */}
-							<Button className="w-full rounded-[3px] px-[24px] py-[14px]">
+							<Button
+								type="submit"
+								className="w-full rounded-[3px] px-[24px] py-[14px]"
+							>
 								Đặt hàng
 							</Button>
-						</form>
+						</div>
 					</div>
 				</div>
 			</section>

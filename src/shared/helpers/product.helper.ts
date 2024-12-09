@@ -6,6 +6,7 @@ import {
 	SizeClient,
 	Variation,
 } from '@/schemas/product.schema'
+import { CartItem } from '../hooks/use-cart-store'
 
 const mapSizeToSizeClient = (detail: ProductDetail): SizeClient => {
 	return {
@@ -97,5 +98,64 @@ export default class ProductHelper {
 
 			return product
 		})
+	}
+
+	static getProductCartQuantity = (
+		items: CartItem[],
+		product: ProductClient,
+		selectedProductColor: Color,
+		selectedProductSize: SizeClient,
+	): number => {
+		const productInCart = items.find((single) => {
+			return (
+				single.cartItemId === product.id &&
+				(single.color ? single.color.id === selectedProductColor.id : true) &&
+				(single.size ? single.size.id === selectedProductSize.id : true)
+			)
+		})
+
+		if (items.length >= 1 && productInCart) {
+			if (product.variation) {
+				return (
+					items.find((single) => {
+						return (
+							single.cartItemId === product.id &&
+							single.color.id === selectedProductColor.id &&
+							single.size.id === selectedProductSize.id
+						)
+					})?.quantity || 0
+				)
+			} else {
+				return (
+					items.find((single: any) => {
+						return product.id === single.cartItemId
+					})?.quantity || 0
+				)
+			}
+		} else {
+			return 0
+		}
+	}
+
+	static getTotalCartQuantity = (cartItems: CartItem[]): number => {
+		if (cartItems.length >= 1) {
+			// Using reduce to calculate the total quantity
+			return cartItems.reduce((totalQuantity, currentItem) => {
+				return totalQuantity + currentItem.quantity
+			}, 0)
+		} else {
+			return 0
+		}
+	}
+
+	static getTotalCartPrice = (cartItems: CartItem[]): number => {
+		if (cartItems.length >= 1) {
+			// Using reduce to calculate the total price
+			return cartItems.reduce((totalPrice, currentItem) => {
+				return totalPrice + currentItem.size.price * currentItem.quantity
+			}, 0)
+		} else {
+			return 0
+		}
 	}
 }
