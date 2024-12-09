@@ -63,7 +63,7 @@ const ViewCart = () => {
 			</div>
 
 			{/* content */}
-			<section className="m-auto w-full max-w-[1540px] px-[50px] pb-[70px] pt-[80px]">
+			<section className="container m-auto w-full pb-[70px] pt-[80px]">
 				<table className="w-full border-collapse border-spacing-0 leading-[1.4]">
 					<thead>
 						<tr className="border-b">

@@ -34,7 +34,7 @@ const Gallery = () => {
 						<CardContent className="relative flex aspect-square items-center justify-center overflow-hidden rounded-xl border-none p-0">
 							<div className="image-gallery relative h-full w-full overflow-hidden">
 								<img
-									src={product.image[0]}
+									src={product.image[0] || 'assets/img/other/placeholder.jpg'}
 									alt={`image-gallery-${product.id}`}
 									className="h-full w-full object-cover transition-all duration-300 group-hover:brightness-75"
 								/>

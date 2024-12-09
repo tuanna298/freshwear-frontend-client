@@ -26,6 +26,7 @@ import {
 	ShoppingCart,
 	Shuffle,
 } from 'lucide-react'
+import React from 'react'
 import { Link } from 'react-router-dom'
 import { NumberField } from '../number-field'
 
@@ -52,17 +53,20 @@ const ProductModal = ({
 					<ShoppingCart size={18} />
 				</Button>
 			</DialogTrigger>
-			<DialogContent className="flex gap-0 overflow-hidden p-0">
+			<DialogContent className="flex max-h-[calc(100vh-60px)] w-full gap-0 overflow-hidden p-0">
 				<DialogTitle></DialogTitle>
 
 				{/* image */}
-				<Carousel className="w-1/2">
+				<Carousel className="!w-[min(50%,68vh)]">
 					<CarouselContent>
 						{image.map((image, index) => (
 							<CarouselItem key={index}>
 								<Card className="shadow-none">
 									<CardContent className="flex items-center justify-center p-0">
-										<img src={image} alt="" />
+										<img
+											src={image || 'assets/img/other/placeholder.jpg'}
+											alt=""
+										/>
 									</CardContent>
 								</Card>
 							</CarouselItem>
@@ -72,7 +76,7 @@ const ProductModal = ({
 					<CarouselNext className="right-5" />
 				</Carousel>
 				{/* info */}
-				<div className="flex w-1/2 flex-col gap-5 px-[40px] py-[50px]">
+				<div className="hidden-scroll-container flex max-w-full flex-grow flex-col gap-5 overflow-y-auto px-[40px] py-[50px]">
 					<h3 className="text-3xl">{name}</h3>
 					{/* price */}
 					<NumberField
@@ -92,7 +96,7 @@ const ProductModal = ({
 						</div>
 						<div className="flex flex-wrap items-center gap-[10px]">
 							{colors.map((color) => (
-								<>
+								<React.Fragment key={color.id}>
 									<input
 										type="radio"
 										id={color.id as string}
@@ -117,7 +121,7 @@ const ProductModal = ({
 											}}
 										/>
 									</label>
-								</>
+								</React.Fragment>
 							))}
 						</div>
 					</div>
@@ -129,7 +133,7 @@ const ProductModal = ({
 						</div>
 						<div className="flex flex-wrap items-center gap-[10px]">
 							{sizes.map((size) => (
-								<>
+								<React.Fragment key={size.id}>
 									<input
 										type="radio"
 										id={size.id as string}
@@ -149,7 +153,7 @@ const ProductModal = ({
 									>
 										{size.name}
 									</label>
-								</>
+								</React.Fragment>
 							))}
 						</div>
 					</div>

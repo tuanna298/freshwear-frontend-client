@@ -5,7 +5,8 @@ import { HttpError, useList } from '@refinedev/core'
 import { motion, Variants } from 'framer-motion'
 import { uniqBy } from 'lodash'
 import { Heart } from 'lucide-react'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+import { useOnClickOutside } from 'usehooks-ts'
 import { Button } from '../../ui/button'
 import { NumberField } from '../number-field'
 import ProductCompare from './product-compare'
@@ -22,7 +23,7 @@ export const ProductGrid = () => {
 	const products = data?.data ? ProductHelper.transform(data.data) : []
 
 	return (
-		<div className="m-auto max-w-[1540px] pr-[50px] ps-[50px] pt-[100px]">
+		<div className="container m-auto pt-[100px]">
 			{/* title */}
 			<div className="mb-[60px] flex flex-col items-center gap-[10px] pr-[15px] ps-[15px]">
 				<span className="text-4xl">Bán chạy nhất</span>
@@ -58,13 +59,14 @@ const buttonVariants: Variants = {
 }
 
 export const ProductGridSingle = ({ product }: ProductGridSingleProps) => {
+	const ref = useRef(null)
 	const { id, name, image, price, variation } = product
 
 	const defaultImages = {
 		main:
-			variation[0].image[0] || image[0] || '/assets/img/other/placeholder.jpg',
+			variation[0]?.image[0] || image[0] || '/assets/img/other/placeholder.jpg',
 		hover:
-			variation[0].image[1] ||
+			variation[0]?.image[1] ||
 			image[0] ||
 			image[1] ||
 			'/assets/img/other/placeholder.jpg',
@@ -73,7 +75,7 @@ export const ProductGridSingle = ({ product }: ProductGridSingleProps) => {
 	const [isHovered, setIsHovered] = useState(false)
 	const [currentImages, setCurrentImages] = useState(defaultImages)
 	const [hoveredColor, setHoveredColor] = useState<string>(
-		variation[0].color.id as string,
+		variation[0]?.color?.id as string,
 	)
 
 	const sizes = uniqBy(
@@ -98,8 +100,13 @@ export const ProductGridSingle = ({ product }: ProductGridSingleProps) => {
 		setHoveredColor(colorId)
 	}
 
+	useOnClickOutside(ref, () => {
+		setIsHovered(false)
+	})
+
 	return (
 		<div
+			ref={ref}
 			className="group h-full"
 			onMouseEnter={() => setIsHovered(true)}
 			onMouseLeave={() => setIsHovered(false)}
@@ -131,7 +138,7 @@ export const ProductGridSingle = ({ product }: ProductGridSingleProps) => {
 					variants={buttonVariants}
 				>
 					<motion.div custom={0.01} variants={buttonVariants}>
-						<ProductModal product={product} />
+						<ProductModal product={product} key={product.id} />
 					</motion.div>
 					<motion.div custom={1} variants={buttonVariants}>
 						<Button className="aspect-square h-[42px] w-[42px] rounded-[3px] bg-background p-0 text-primary hover:text-background">

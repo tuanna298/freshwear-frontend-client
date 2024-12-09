@@ -5,7 +5,7 @@ import { Outlet } from 'react-router-dom'
 
 const AppLayout = () => {
 	return (
-		<div>
+		<div className="flex min-h-[700px] flex-col justify-between gap-0">
 			<Header />
 			<Outlet />
 			<Footer />

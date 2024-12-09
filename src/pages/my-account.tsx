@@ -22,7 +22,7 @@ const MyAccount = () => {
 				</div>
 			</div>
 
-			<section className="m-auto mt-[80px] w-full max-w-[1540px] px-[50px] pb-[70px]">
+			<section className="container m-auto mt-[80px] w-full pb-[70px]">
 				<div className="flex flex-row justify-between">
 					<div className="w-[30%] px-[15px]">
 						<ul className="sticky top-0 mb-0 flex list-none flex-col gap-[10px] ps-0">

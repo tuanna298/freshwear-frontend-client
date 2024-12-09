@@ -10,7 +10,7 @@ export default () => (
 			<Route
 				path="/"
 				element={
-					<Suspense>
+					<Suspense fallback={null}>
 						<Home />
 					</Suspense>
 				}
@@ -18,7 +18,7 @@ export default () => (
 			<Route
 				path="/shop"
 				element={
-					<Suspense>
+					<Suspense fallback={null}>
 						<Home />
 					</Suspense>
 				}
@@ -26,7 +26,7 @@ export default () => (
 			<Route
 				path="/product-detail/:id"
 				element={
-					<Suspense>
+					<Suspense fallback={null}>
 						<ProductDetail />
 					</Suspense>
 				}
@@ -34,7 +34,7 @@ export default () => (
 			<Route
 				path="/view-cart"
 				element={
-					<Suspense>
+					<Suspense fallback={null}>
 						<ProductDetail />
 					</Suspense>
 				}
@@ -42,7 +42,7 @@ export default () => (
 			<Route
 				path="/wishlist"
 				element={
-					<Suspense>
+					<Suspense fallback={null}>
 						<Wishlist />
 					</Suspense>
 				}
@@ -50,7 +50,7 @@ export default () => (
 			<Route
 				path="/checkout"
 				element={
-					<Suspense>
+					<Suspense fallback={null}>
 						<Checkout />
 					</Suspense>
 				}
@@ -58,7 +58,7 @@ export default () => (
 			<Route
 				path="/my-account"
 				element={
-					<Suspense>
+					<Suspense fallback={null}>
 						<MyAccount />
 					</Suspense>
 				}
@@ -66,7 +66,7 @@ export default () => (
 			<Route
 				path="/compare"
 				element={
-					<Suspense>
+					<Suspense fallback={null}>
 						<Compare />
 					</Suspense>
 				}

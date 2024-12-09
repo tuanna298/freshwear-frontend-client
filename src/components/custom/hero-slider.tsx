@@ -93,8 +93,8 @@ const HeroSliderSingle = ({ data, sliderClass }: HeroSliderSingleProps) => {
 			}`}
 			style={{ backgroundImage }}
 		>
-			<div className="container mr-auto ms-auto w-full pr-[15px] ps-[15px]">
-				<div className="mr-[-15px] ms-[-15px] flex flex-wrap">
+			<div className="container mr-auto ms-auto w-full">
+				<div className="flex flex-wrap">
 					<div className="max-w-full">
 						<div className="slider-content-5 slider-animated-1 text-start">
 							<h3 className="animate__animated">{data.title}</h3>

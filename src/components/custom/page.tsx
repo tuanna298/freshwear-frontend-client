@@ -8,12 +8,7 @@ interface PageSectionProps {
 
 export const PageSection = ({ children, classname }: PageSectionProps) => {
 	return (
-		<div
-			className={cn(
-				'm-auto w-full max-w-[1540px] pb-[60px] pr-[50px] ps-[50px]',
-				classname,
-			)}
-		>
+		<div className={cn('container m-auto h-full w-full pb-[60px]', classname)}>
 			{children}
 		</div>
 	)

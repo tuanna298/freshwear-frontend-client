@@ -23,7 +23,7 @@ const Checkout = () => {
 				</div>
 			</div>
 
-			<section className="m-auto w-full max-w-[1540px] px-[50px] pb-[70px] pt-[80px]">
+			<section className="container m-auto w-full pb-[70px] pt-[80px]">
 				<div className="grid grid-cols-3 gap-[3rem]">
 					<div className="col-span-2">
 						<h5 className="mb-[20px] text-[28px] font-[500px] leading-[33.6px]">

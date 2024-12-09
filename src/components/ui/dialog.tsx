@@ -17,8 +17,8 @@ const Dialog = ({
 			if (open) {
 				// document.body.style.paddingRight = '20px'
 			} else {
-				document.body.style.overflow = ''
-				document.body.style.paddingRight = ''
+				// document.body.style.overflow = ''
+				// document.body.style.paddingRight = ''
 			}
 
 			// Call the original onOpenChange if provided

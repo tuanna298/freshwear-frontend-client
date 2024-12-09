@@ -56,7 +56,7 @@ const Wishlist = () => {
 				</div>
 			</div>
 
-			<section className="m-auto w-full max-w-[1540px] px-[50px] pb-[70px] pt-[45px] ">
+			<section className="container m-auto w-full pb-[70px] pt-[45px] ">
 				<div className="grid grid-cols-4 gap-[30px] gap-y-[80px]">
 					{products.map((product) => {
 						return <ProductGridSingle product={product} key={product.id} />
