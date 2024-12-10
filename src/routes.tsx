@@ -1,6 +1,15 @@
 import { Suspense } from 'react'
 import { Route, Routes } from 'react-router-dom'
-import { Checkout, Home, MyAccount, ProductDetail, Wishlist } from './pages'
+import {
+	Checkout,
+	Home,
+	MyAccount,
+	OrderSuccess,
+	ProductDetail,
+	Shop,
+	ViewCart,
+	Wishlist,
+} from './pages'
 import Compare from './pages/compare'
 import { AppLayout } from './shared/layouts'
 
@@ -19,7 +28,7 @@ export default () => (
 				path="/shop"
 				element={
 					<Suspense fallback={null}>
-						<Home />
+						<Shop />
 					</Suspense>
 				}
 			/>
@@ -35,7 +44,7 @@ export default () => (
 				path="/view-cart"
 				element={
 					<Suspense fallback={null}>
-						<ProductDetail />
+						<ViewCart />
 					</Suspense>
 				}
 			/>
@@ -68,6 +77,14 @@ export default () => (
 				element={
 					<Suspense fallback={null}>
 						<Compare />
+					</Suspense>
+				}
+			/>
+			<Route
+				path="/order-success"
+				element={
+					<Suspense fallback={null}>
+						<OrderSuccess />
 					</Suspense>
 				}
 			/>

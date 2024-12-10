@@ -51,8 +51,8 @@ const buttonVariants: Variants = {
 		opacity: 1,
 		y: 0,
 		transition: {
-			delay: custom * 0.3,
-			duration: 0.2,
+			delay: custom * 0.2,
+			duration: 0.1,
 			ease: 'easeOut',
 		},
 	}),
@@ -64,9 +64,11 @@ export const ProductGridSingle = ({ product }: ProductGridSingleProps) => {
 
 	const defaultImages = {
 		main:
-			variation[0]?.image[0] || image[0] || '/assets/img/other/placeholder.jpg',
+			(variation?.length > 0 && variation[0]?.image[0]) ||
+			image[0] ||
+			'/assets/img/other/placeholder.jpg',
 		hover:
-			variation[0]?.image[1] ||
+			(variation?.length > 0 && variation[0]?.image[1]) ||
 			image[0] ||
 			image[1] ||
 			'/assets/img/other/placeholder.jpg',
@@ -75,15 +77,15 @@ export const ProductGridSingle = ({ product }: ProductGridSingleProps) => {
 	const [isHovered, setIsHovered] = useState(false)
 	const [currentImages, setCurrentImages] = useState(defaultImages)
 	const [hoveredColor, setHoveredColor] = useState<string>(
-		variation[0]?.color?.id as string,
+		(variation?.length > 0 && (variation[0]?.color?.id as string)) || '',
 	)
 
 	const sizes = uniqBy(
-		variation.flatMap((v) => v.size.map((s) => s)),
+		variation?.length > 0 ? variation.flatMap((v) => v.size.map((s) => s)) : [],
 		'id',
 	)
 	const colors = uniqBy(
-		variation.map((v) => v.color),
+		variation?.length > 0 ? variation.map((v) => v.color) : [],
 		'id',
 	)
 
@@ -175,26 +177,30 @@ export const ProductGridSingle = ({ product }: ProductGridSingleProps) => {
 				<NumberField className="font-bold" value={price.min} />
 				{/* colors list */}
 				<ul className="mb-0 mt-1 flex list-none flex-wrap gap-2 ps-0">
-					{colors.map((color) => (
-						<li
-							key={color.id}
-							className={cn(
-								'relative flex h-[26px] w-[26px] cursor-pointer items-center justify-center rounded-full border border-gray-200 p-[3px]',
-								hoveredColor === color.id && 'ring-2 ring-primary',
-							)}
-							onMouseEnter={() => handleColorHover(color.id as string)}
-						>
-							{/* tooltip */}
-							{/* circle */}
-							<span
-								className="inline-block h-[18px] w-[18px] rounded-full border-[3px] border-transparent"
-								style={{
-									backgroundColor: color.code,
-								}}
-							/>
-							{/* color image */}
-						</li>
-					))}
+					{colors.length > 0 ? (
+						colors.map((color) => (
+							<li
+								key={color.id}
+								className={cn(
+									'relative flex h-[26px] w-[26px] cursor-pointer items-center justify-center rounded-full border border-gray-200 p-[3px]',
+									hoveredColor === color.id && 'ring-2 ring-primary',
+								)}
+								onMouseEnter={() => handleColorHover(color.id as string)}
+							>
+								{/* tooltip */}
+								{/* circle */}
+								<span
+									className="inline-block h-[18px] w-[18px] rounded-full border-[3px] border-transparent"
+									style={{
+										backgroundColor: color.code,
+									}}
+								/>
+								{/* color image */}
+							</li>
+						))
+					) : (
+						<div className="h-[26px] w-[26px] bg-background" />
+					)}
 				</ul>
 			</div>
 		</div>

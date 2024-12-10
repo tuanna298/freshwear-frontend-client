@@ -3,8 +3,8 @@ import { BaseDTO } from '@/shared/common/interfaces'
 import { z } from 'zod'
 
 export enum PaymentMethod {
-	COD,
-	TRANSFER,
+	CASH = 'CASH',
+	TRANSFER = 'TRANSFER',
 }
 export const orderSchema = z.object({
 	id: z.string().optional().nullable(),
@@ -13,7 +13,7 @@ export const orderSchema = z.object({
 	email: z.string(),
 	full_name: z.string(),
 	note: z.string().optional().nullable(),
-	method: z.nativeEnum(PaymentMethod).default(PaymentMethod.COD),
+	method: z.nativeEnum(PaymentMethod).default(PaymentMethod.CASH),
 	cartItems: z.array(z.object({})),
 })
 

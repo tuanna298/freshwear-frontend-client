@@ -31,12 +31,12 @@ const Gallery = () => {
 			<div className="flex gap-[7px]">
 				{products.map((product) => (
 					<Card key={product.id} className="group flex-grow shadow-none">
-						<CardContent className="relative flex aspect-square items-center justify-center overflow-hidden rounded-xl border-none p-0">
+						<CardContent className="relative flex aspect-square h-full items-center justify-center overflow-hidden rounded-xl border-none p-0">
 							<div className="image-gallery relative h-full w-full overflow-hidden">
 								<img
 									src={product.image[0] || 'assets/img/other/placeholder.jpg'}
 									alt={`image-gallery-${product.id}`}
-									className="h-full w-full object-cover transition-all duration-300 group-hover:brightness-75"
+									className="h-full w-full object-cover object-top transition-all duration-300 group-hover:brightness-75"
 								/>
 								<Button
 									size="icon"

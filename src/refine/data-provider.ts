@@ -45,16 +45,14 @@ export default {
 
 		const query: {
 			page?: number
-			pageSize?: number
+			perPage?: number
 			sortBy?: string
 			orderBy?: string
-		} = {
-			sortBy: 'updated_at',
-		}
+		} = {}
 
 		if (mode === 'server') {
 			query.page = current - 1
-			query.pageSize = pageSize
+			query.perPage = pageSize
 		}
 
 		const generatedSort = generateSort(sorters)

@@ -18,109 +18,25 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select'
+import { cn } from '@/lib/utils'
+import { Product } from '@/schemas/product.schema'
+import ProductHelper from '@/shared/helpers/product.helper'
+import { HttpError, useList } from '@refinedev/core'
 import { ListFilter } from 'lucide-react'
+import { useState } from 'react'
 import { Fragment } from 'react/jsx-runtime'
 
-const products = [
-	{
-		id: 1,
-		name: 'Classic T-Shirt',
-		price: 250,
-		image: 'https://picsum.photos/700/1000',
-		sizes: ['S', 'M', 'L', 'XL'],
-		colors: ['red', 'white', 'black'],
-	},
-	{
-		id: 2,
-		name: 'Running Shoes',
-		price: 1200,
-		image: 'https://picsum.photos/700/1000',
-		sizes: ['6', '7', '8', '9', '10'],
-		colors: ['blue', 'gray', 'black'],
-	},
-	{
-		id: 3,
-		name: 'Leather Jacket',
-		price: 3500,
-		image: 'https://picsum.photos/700/1000',
-		sizes: ['M', 'L', 'XL'],
-		colors: ['black', 'brown'],
-	},
-	{
-		id: 4,
-		name: 'Casual Cap',
-		price: 150,
-		image: 'https://picsum.photos/700/1000',
-		sizes: ['One Size'],
-		colors: ['green', 'white', 'black'],
-	},
-	{
-		id: 5,
-		name: 'Denim Jeans',
-		price: 800,
-		image: 'https://picsum.photos/700/1000',
-		sizes: ['30', '32', '34', '36'],
-		colors: ['blue', 'black', 'gray'],
-	},
-	{
-		id: 6,
-		name: 'Sneakers',
-		price: 950,
-		image: 'https://picsum.photos/700/1000',
-		sizes: ['5', '6', '7', '8', '9'],
-		colors: ['pink', 'white', 'black'],
-	},
-	{
-		id: 7,
-		name: 'Winter Coat',
-		price: 4500,
-		image: 'https://picsum.photos/700/1000',
-		sizes: ['M', 'L', 'XL', 'XXL'],
-		colors: ['brown', 'black', 'gray'],
-	},
-	{
-		id: 8,
-		name: 'Woolen Scarf',
-		price: 300,
-		image: 'https://picsum.photos/700/1000',
-		sizes: ['One Size'],
-		colors: ['purple', 'white', 'black'],
-	},
-	{
-		id: 9,
-		name: 'Sports Watch',
-		price: 2500,
-		image: 'https://picsum.photos/700/1000',
-		sizes: ['One Size'],
-		colors: ['gold', 'black', 'silver'],
-	},
-	{
-		id: 10,
-		name: 'Backpack',
-		price: 2000,
-		image: 'https://picsum.photos/700/1000',
-		sizes: ['One Size'],
-		colors: ['red', 'blue', 'gray'],
-	},
-	{
-		id: 11,
-		name: 'Sunglasses',
-		price: 1000,
-		image: 'https://picsum.photos/700/1000',
-		sizes: ['One Size'],
-		colors: ['black', 'brown', 'blue'],
-	},
-	{
-		id: 12,
-		name: 'Formal Shirt',
-		price: 700,
-		image: 'https://picsum.photos/700/1000',
-		sizes: ['S', 'M', 'L', 'XL'],
-		colors: ['white', 'blue', 'gray'],
-	},
-]
-
 const Shop = () => {
+	const [grid, setGrid] = useState<2 | 3 | 4 | 5 | 6>(4)
+	const { data } = useList<Product, HttpError>({
+		resource: 'product',
+		pagination: {
+			pageSize: 12,
+		},
+	})
+
+	const products = data?.data ? ProductHelper.transform(data.data) : []
+
 	return (
 		<Fragment>
 			<HeaderPlacholder />
@@ -150,20 +66,52 @@ const Shop = () => {
 						</Button>
 
 						<div className="flex items-center justify-center gap-10">
-							<div className="grid grid-cols-2 gap-1">
-								<Dots count={4} />
+							<div
+								className={cn(
+									'grid cursor-pointer grid-cols-2 gap-1 transition-[all_0.3s_ease]',
+								)}
+								onClick={() => setGrid(2)}
+							>
+								<Dots
+									count={4}
+									color={(grid === 2 && '#000000') || undefined}
+								/>
 							</div>
-							<div className="grid grid-cols-3 gap-1">
-								<Dots count={6} />
+							<div
+								className="grid cursor-pointer grid-cols-3 gap-1 transition-[all_0.3s_ease]"
+								onClick={() => setGrid(3)}
+							>
+								<Dots
+									count={6}
+									color={(grid === 3 && '#000000') || undefined}
+								/>
 							</div>
-							<div className="grid grid-cols-4 gap-1">
-								<Dots count={8} />
+							<div
+								className="grid cursor-pointer grid-cols-4 gap-1 transition-[all_0.3s_ease]"
+								onClick={() => setGrid(4)}
+							>
+								<Dots
+									count={8}
+									color={(grid === 4 && '#000000') || undefined}
+								/>
 							</div>
-							<div className="grid grid-cols-5 gap-1">
-								<Dots count={10} />
+							<div
+								className="grid cursor-pointer grid-cols-5 gap-1 transition-[all_0.3s_ease]"
+								onClick={() => setGrid(5)}
+							>
+								<Dots
+									count={10}
+									color={(grid === 5 && '#000000') || undefined}
+								/>
 							</div>
-							<div className="grid grid-cols-6 gap-1">
-								<Dots count={12} />
+							<div
+								className="grid cursor-pointer grid-cols-6 gap-1 transition-[all_0.3s_ease]"
+								onClick={() => setGrid(6)}
+							>
+								<Dots
+									count={12}
+									color={(grid === 6 && '#000000') || undefined}
+								/>
 							</div>
 						</div>
 
@@ -181,7 +129,7 @@ const Shop = () => {
 						</div>
 					</div>
 
-					<div className="grid grid-cols-4 gap-[30px]">
+					<div className={`grid grid-cols-${grid} gap-[30px]`}>
 						{products.map((product) => (
 							<ProductGridSingle product={product} key={product.id} />
 						))}

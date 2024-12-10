@@ -60,7 +60,9 @@ const ProductModal = ({ product }: ProductModalProps) => {
 	const [selectedProductSize, setSelectedProductSize] =
 		useState(initialSelectedSize)
 
-	const [selectedVariant, setSelectedVariant] = useState(product?.variation[0])
+	const [selectedVariant, setSelectedVariant] = useState(
+		product?.variation?.length > 0 ? product.variation[0] : undefined,
+	)
 
 	const [productStock, setProductStock] = useState(initialProductStock)
 
@@ -76,10 +78,6 @@ const ProductModal = ({ product }: ProductModalProps) => {
 	)
 
 	const isButtonDisabled = quantityCount > productStock - productCartQty
-
-	console.log('quantityCount', quantityCount)
-	console.log('productStock', productStock)
-	console.log('productCartQty', productCartQty)
 
 	const sizes = uniqBy(
 		(product?.variation || []).flatMap((v) => v.size.map((s) => s)),
@@ -142,7 +140,7 @@ const ProductModal = ({ product }: ProductModalProps) => {
 					<h3 className="text-3xl">{product?.name}</h3>
 					{/* price */}
 					<NumberField
-						value={finalProductPrice}
+						value={finalProductPrice || 0}
 						className="text-3xl text-destructive"
 					/>
 					{/* rating */}

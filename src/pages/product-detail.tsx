@@ -20,7 +20,14 @@ import {
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { StarRating } from '@/components/ui/star-rating'
+import { AppToast } from '@/components/ui/toast'
 import { cn } from '@/lib/utils'
+import { Color } from '@/schemas/color.schema'
+import { Product, SizeClient } from '@/schemas/product.schema'
+import ProductHelper from '@/shared/helpers/product.helper'
+import { useCartStore } from '@/shared/hooks/use-cart-store'
+import { HttpError, useList, useOne } from '@refinedev/core'
+import { uniqBy } from 'lodash'
 import {
 	CircleSlash2,
 	Dam,
@@ -33,89 +40,96 @@ import {
 	UndoDot,
 	WashingMachine,
 } from 'lucide-react'
+import React, { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import { Fragment } from 'react/jsx-runtime'
 
-const products = [
-	{
-		id: 1,
-		name: 'Classic T-Shirt',
-		price: 250,
-		image: 'https://picsum.photos/700/1000',
-		sizes: ['S', 'M', 'L', 'XL'],
-		colors: ['red', 'white', 'black'],
-	},
-	{
-		id: 2,
-		name: 'Running Shoes',
-		price: 1200,
-		image: 'https://picsum.photos/700/1000',
-		sizes: ['6', '7', '8', '9', '10'],
-		colors: ['blue', 'gray', 'black'],
-	},
-	{
-		id: 3,
-		name: 'Leather Jacket',
-		price: 3500,
-		image: 'https://picsum.photos/700/1000',
-		sizes: ['M', 'L', 'XL'],
-		colors: ['black', 'brown'],
-	},
-	{
-		id: 4,
-		name: 'Casual Cap',
-		price: 150,
-		image: 'https://picsum.photos/700/1000',
-		sizes: ['One Size'],
-		colors: ['green', 'white', 'black'],
-	},
-]
-
-const product = {
-	id: 1,
-	title: 'Ribbed Modal T-shirt',
-	price: 18.95,
-	originalPrice: 25.0,
-	discount: 20,
-	description:
-		'A stylish ribbed modal T-shirt made with breathable fabric, perfect for everyday wear.',
-	colors: [
-		{ id: 1, name: 'Black', code: '#000000' },
-		{ id: 2, name: 'Beige', code: '#D1B085' },
-		{ id: 3, name: 'Light Blue', code: '#C7D7F2' },
-	],
-	sizes: [
-		{
-			id: 1,
-			name: 'S',
-		},
-		{
-			id: 2,
-			name: 'M',
-		},
-		{
-			id: 3,
-			name: 'L',
-		},
-		{
-			id: 4,
-			name: 'XL',
-		},
-	],
-	stock: {
-		S: 10,
-		M: 15,
-		L: 8,
-		XL: 5,
-	},
-	images: [
-		'https://picsum.photos/700/1000',
-		'https://picsum.photos/700/1000',
-		'https://picsum.photos/700/1000',
-		'https://picsum.photos/700/1000',
-	],
-}
-
 const ProductDetail = () => {
+	const navigate = useNavigate()
+	const { id } = useParams<{ id: string }>()
+	const { data: dataOne } = useOne<Product, HttpError>({
+		resource: 'product',
+		id,
+	})
+
+	const { data } = useList<Product, HttpError>({
+		resource: 'product',
+		pagination: {
+			current: 1,
+			pageSize: 4,
+		},
+		sorters: [
+			{
+				field: 'created_at',
+				order: 'desc',
+			},
+		],
+	})
+
+	const products = data?.data ? ProductHelper.transform(data.data) : []
+	const product = dataOne?.data && ProductHelper.transform([dataOne.data])[0]
+
+	if (!product) {
+		navigate('/404')
+		return null
+	}
+
+	const { items, add } = useCartStore()
+
+	const initialSelectedColor =
+		product?.variation && product.variation?.length > 0
+			? product?.variation[0].color
+			: ({} as Color)
+	const initialSelectedSize =
+		product?.variation && product.variation?.length > 0
+			? product?.variation[0].size[0]
+			: ({} as SizeClient)
+	const initialProductStock =
+		product?.variation && product.variation?.length > 0
+			? product?.variation[0].size[0].stock
+			: 0
+
+	const [selectedProductColor, setSelectedProductColor] =
+		useState(initialSelectedColor)
+
+	const [selectedProductSize, setSelectedProductSize] =
+		useState(initialSelectedSize)
+
+	const [selectedVariant, setSelectedVariant] = useState(
+		product?.variation?.length > 0 ? product.variation[0] : undefined,
+	)
+
+	const [productStock, setProductStock] = useState(initialProductStock)
+
+	const [quantityCount, setQuantityCount] = useState(1)
+
+	const finalProductPrice = selectedProductSize.price
+
+	const productCartQty = ProductHelper.getProductCartQuantity(
+		items,
+		product,
+		selectedProductColor,
+		selectedProductSize,
+	)
+
+	const isButtonDisabled = quantityCount > productStock - productCartQty
+
+	const sizes = uniqBy(
+		(product?.variation || []).flatMap((v) => v.size.map((s) => s)),
+		'id',
+	)
+	const colors = uniqBy(
+		(product?.variation || []).map((v) => v.color),
+		'id',
+	)
+
+	useEffect(() => {
+		const selectedVariant = product?.variation?.find(
+			(variation) => variation.color.id === selectedProductColor.id,
+		)
+		if (selectedVariant) setSelectedVariant(selectedVariant)
+	}, [selectedProductColor])
+
 	return (
 		<Fragment>
 			<HeaderPlacholder />
@@ -142,28 +156,32 @@ const ProductDetail = () => {
 						className="flex items-start gap-2 pr-[30px]"
 					>
 						<CarouselThumbsContainer className="h-full max-h-[1000px] gap-2">
-							{Array.from({ length: 10 }).map((_, index) => (
-								<SliderThumbItem
-									key={index}
-									index={index}
-									className="rounded-md bg-transparent p-0"
-								>
-									<span className="flex h-full w-full cursor-pointer items-center justify-center rounded-md border border-muted bg-background">
-										Slide {index + 1}
-									</span>
-								</SliderThumbItem>
-							))}
+							{selectedVariant?.image &&
+								selectedVariant.image?.length > 0 &&
+								(selectedVariant?.image).map((_, index) => (
+									<SliderThumbItem
+										key={index}
+										index={index}
+										className="rounded-md bg-transparent p-0"
+									>
+										<span className="flex h-full w-full cursor-pointer items-center justify-center rounded-md border border-muted bg-background">
+											Slide {index + 1}
+										</span>
+									</SliderThumbItem>
+								))}
 						</CarouselThumbsContainer>
 						<div className="relative flex-grow basis-3/4">
 							<CarouselMainContainer className="h-[1000px]">
-								{Array.from({ length: 10 }).map((_, index) => (
-									<SliderMainItem
-										key={index}
-										className="flex items-center justify-center rounded-md border border-muted"
-									>
-										Slide {index + 1}
-									</SliderMainItem>
-								))}
+								{selectedVariant?.image &&
+									selectedVariant.image?.length > 0 &&
+									(selectedVariant?.image).map((_, index) => (
+										<SliderMainItem
+											key={index}
+											className="flex items-center justify-center rounded-md border border-muted"
+										>
+											Slide {index + 1}
+										</SliderMainItem>
+									))}
 							</CarouselMainContainer>
 						</div>
 					</Carousel>
@@ -172,7 +190,7 @@ const ProductDetail = () => {
 
 						{/* price */}
 						<NumberField
-							value={product.price}
+							value={finalProductPrice || 0}
 							className="text-3xl text-destructive"
 						/>
 						{/* rating */}
@@ -190,25 +208,34 @@ const ProductDetail = () => {
 						<div>
 							<div className="mb-[15px]">
 								Màu sắc:
-								<span className="ms-3 font-bold">Xanh</span>
+								<span className="ms-3 font-bold">
+									{selectedProductColor.name}
+								</span>
 							</div>
 							<div className="flex flex-wrap items-center gap-[10px]">
-								{product.colors.map((color) => (
-									<>
+								{colors.map((color) => (
+									<React.Fragment key={color.id}>
 										<input
 											type="radio"
-											id={color.id.toString()}
+											id={color.id as string}
 											className="!absolute -m-[1px] h-[1px] w-[1px] overflow-hidden border-none p-0"
 											style={{
 												clip: 'rect(0 0 0 0)',
 												wordWrap: 'normal',
 											}}
+											checked={color.id === selectedProductColor.id}
+											onChange={() => {
+												setSelectedProductColor(color)
+												setSelectedProductSize(sizes[0])
+												setProductStock(sizes[0].stock)
+												setQuantityCount(1)
+											}}
 										/>
 										<label
-											htmlFor={color.id.toString()}
+											htmlFor={color.id as string}
 											className={cn(
 												'relative h-[36px] w-[36px] cursor-pointer !rounded-[60px] border border-transparent p-[5px] text-center font-[400] leading-[22.4px] transition-[all_0.3s_ease]',
-												color.id === 1 &&
+												color.id === selectedProductColor.id &&
 													'border-primary shadow-[0_0.4rem_0.4rem_rgba(0,0,0,0.102)]',
 											)}
 										>
@@ -219,7 +246,7 @@ const ProductDetail = () => {
 												}}
 											/>
 										</label>
-									</>
+									</React.Fragment>
 								))}
 							</div>
 						</div>
@@ -227,49 +254,100 @@ const ProductDetail = () => {
 						<div>
 							<div className="mb-[15px]">
 								Size:
-								<span className="ms-3 font-bold">S</span>
+								<span className="ms-3 font-bold">
+									{selectedProductSize.name}
+								</span>
 							</div>
 							<div className="flex flex-wrap items-center gap-[10px]">
-								{product.sizes.map((size) => (
-									<>
+								{sizes.map((size) => (
+									<React.Fragment key={size.id}>
 										<input
 											type="radio"
-											id={size.id.toString()}
+											id={size.id as string}
 											className="!absolute -m-[1px] h-[1px] w-[1px] overflow-hidden border-none p-0"
 											style={{
 												clip: 'rect(0 0 0 0)',
 												wordWrap: 'normal',
+											}}
+											checked={size.id === selectedProductSize.id}
+											onChange={() => {
+												setSelectedProductSize(size)
+												setProductStock(size.stock)
+												setQuantityCount(1)
 											}}
 										/>
 										<label
 											htmlFor={size.id.toString()}
 											className={cn(
 												'relative h-[38px] w-max min-w-[45px] cursor-pointer rounded-[3px] border border-[#8787871E] px-[15px] py-[7px] text-center font-[400] leading-[22.4px] transition-[all_0.3s_ease]',
-												size.id === 1 &&
+												size.id === selectedProductSize.id &&
 													'border-primary bg-primary text-white shadow-[0_0.4rem_0.4rem_rgba(0,0,0,0.102)]',
 											)}
 										>
 											{size.name}
 										</label>
-									</>
+									</React.Fragment>
 								))}
 							</div>
 						</div>
 
 						{/* quantity */}
 						<div>
-							<div className="mb-[5px] !font-[600]">Số lượng</div>
+							<div className="flex items-center justify-between gap-2">
+								<div className="mb-[5px] !font-[600]">Số lượng</div>
+								<div>
+									<span className="font-bold text-destructive">
+										{productStock}
+									</span>{' '}
+									trong kho
+								</div>
+							</div>
 							<div className="flex w-32 justify-between overflow-hidden rounded-[3px] bg-[#f2f2f2]">
-								<span className="flex h-[46px] w-[38px] cursor-pointer items-center justify-center text-primary transition-[all_0.3s_ease] hover:text-destructive">
+								<span
+									className="user-select-none flex h-[46px] w-[38px] cursor-pointer select-none items-center justify-center text-primary transition-[all_0.3s_ease] hover:text-destructive"
+									onClick={() => {
+										if (quantityCount <= 1) {
+											AppToast.error('Số lượng tối thiểu là 1', {
+												position: 'bottom-left',
+											})
+										} else {
+											setQuantityCount(quantityCount - 1)
+										}
+									}}
+								>
 									<Minus size={16} />
 								</span>
 								<input
 									type="text"
 									min={1}
-									value={1}
+									value={quantityCount}
+									onChange={(e) => {
+										const value = parseInt(e.target.value)
+
+										if (isNaN(value)) return
+
+										if (value > productStock) {
+											AppToast.error('Số lượng không đủ trong kho', {
+												position: 'bottom-left',
+											})
+										} else {
+											setQuantityCount(value)
+										}
+									}}
 									className="h-[46px] w-[51px] border-0 bg-transparent p-0 text-center text-[16px] font-[600px] leading-[26px] text-primary"
 								/>
-								<span className="flex h-[46px] w-[38px] cursor-pointer items-center justify-center text-primary transition-[all_0.3s_ease] hover:text-destructive">
+								<span
+									className="user-select-none flex h-[46px] w-[38px] cursor-pointer select-none items-center justify-center text-primary transition-[all_0.3s_ease] hover:text-destructive"
+									onClick={() => {
+										if (quantityCount >= productStock - productCartQty) {
+											AppToast.error('Số lượng không đủ trong kho', {
+												position: 'bottom-left',
+											})
+										} else {
+											setQuantityCount(quantityCount + 1)
+										}
+									}}
+								>
 									<Plus size={16} />
 								</span>
 							</div>
@@ -277,13 +355,32 @@ const ProductDetail = () => {
 
 						{/* buy button */}
 						<div className="flex flex-wrap gap-[8px]">
-							<Button className="h-full flex-grow rounded-[3px] px-[24px] py-[14px] text-center text-base font-semibold transition-[all_0.3s_ease]">
-								Thêm vào giỏ -{' '}
-								<NumberField
-									className="text-base font-semibold"
-									value={product.price}
-								/>
-							</Button>
+							{productStock && productStock > 0 ? (
+								<Button
+									className="h-full flex-grow rounded-[3px] px-[24px] py-[14px] text-center text-base font-semibold transition-[all_0.3s_ease]"
+									disabled={isButtonDisabled}
+									onClick={() =>
+										add({
+											id: '',
+											cartItemId: product.id,
+											name: product.name,
+											quantity: quantityCount,
+											image: product.image[0],
+											color: selectedProductColor,
+											size: selectedProductSize,
+										})
+									}
+								>
+									Thêm vào giỏ
+								</Button>
+							) : (
+								<Button
+									className="h-full flex-grow rounded-[3px] px-[24px] py-[14px] text-center text-base font-semibold transition-[all_0.3s_ease]"
+									disabled={true}
+								>
+									Hết hàng
+								</Button>
+							)}
 							<Button
 								variant="outline"
 								className="h-full flex-shrink-0 rounded-[3px] transition-[all_0.3s_ease]"

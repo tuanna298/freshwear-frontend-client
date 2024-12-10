@@ -40,11 +40,17 @@ const MyAccount = lazy(async () => {
 	return import('./my-account')
 })
 
+const OrderSuccess = lazy(async () => {
+	await new Promise((r) => setTimeout(r, 300))
+	return import('./order-success')
+})
+
 export {
 	Checkout,
 	Compare,
 	Home,
 	MyAccount,
+	OrderSuccess,
 	ProductDetail,
 	Shop,
 	ViewCart,
