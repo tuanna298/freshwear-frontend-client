@@ -8,7 +8,11 @@ export const handleError = (error: AxiosError<BaseErrorResponse>) => {
 }
 
 export const getErrorDetailMessage = (error: AxiosError<BaseErrorResponse>) => {
-	return error.response?.data.error?.details ?? 'Đã xảy ra lỗi không xác định.'
+	return (
+		error.response?.data.error?.details ??
+		(error?.response?.data as any)?.message?.join(', ') ??
+		'Đã xảy ra lỗi không xác định.'
+	)
 }
 
 export const getErrorSumaryMessage = (error: AxiosError<BaseErrorResponse>) => {

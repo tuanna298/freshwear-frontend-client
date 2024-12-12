@@ -1,7 +1,8 @@
 import { cn } from '@/lib/utils'
-import { Heart, UserRound } from 'lucide-react'
+import { Heart } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Button } from '../ui/button'
+import AccountNav from './account-nav'
 import { Navigation } from './navigation'
 import ShoppingCart from './shopping-cart'
 
@@ -10,7 +11,7 @@ export const HeaderPlacholder = () => {
 		<div
 			className="h-1/2 pr-0 ps-0 pt-[69px]"
 			style={{
-				backgroundImage: 'url(assets/img/other/page-title-blog.png)',
+				backgroundImage: 'url(/assets/img/other/page-title-blog.png)',
 				backgroundRepeat: 'no-repeat',
 				backgroundSize: 'cover',
 			}}
@@ -37,7 +38,6 @@ export const Header = () => {
 				'fixed left-0 right-0 top-0 z-50 grid min-h-24 !w-[100vw] grid-cols-12 items-center px-[40px] align-middle transition-all duration-300',
 				isScrolled ? 'bg-white text-black shadow-md' : 'bg-transparent',
 				isScrolled ? 'py-4' : 'py-6',
-				// !isHomePage && !isScrolled && 'relative',
 			)}
 		>
 			<div className="col-span-3 flex justify-start">
@@ -51,13 +51,7 @@ export const Header = () => {
 				<Navigation />
 			</div>
 			<div className="col-span-3 flex justify-end gap-4">
-				<Button
-					size="icon"
-					variant="ghost"
-					className="rounded-full border-transparent bg-transparent"
-				>
-					<UserRound size={18} />
-				</Button>
+				<AccountNav />
 				<Button
 					size="icon"
 					variant="ghost"

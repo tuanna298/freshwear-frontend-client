@@ -1,6 +1,8 @@
 import {
 	ChangePasswordDto,
+	ResetPasswordDto,
 	SignInDto,
+	SignUpDto,
 	UpdateProfileDto,
 	User,
 } from '@/schemas/auth/user.schema'
@@ -12,7 +14,10 @@ const {
 	AUTH: {
 		BASE,
 		SIGN_IN,
+		SIGN_UP,
 		SIGN_OUT,
+		FORGOT_PASSWORD_REQUEST,
+		FORGOT_PASSWORD_RESET,
 		ME: { BASE: ME, UPDATE_PROFILE, CHANGE_PASSWORD },
 	},
 } = API_PATHS
@@ -28,6 +33,14 @@ class AuthApi {
 	signIn = async (dto: SignInDto): Promise<BaseResponse<AuthTokens>> =>
 		httpConfig.default.post(this.buildUrl(SIGN_IN), dto)
 
+	signUp = async (
+		dto: Omit<SignUpDto, 'confirm_password'>,
+	): Promise<BaseResponse<void>> =>
+		(await import('@/shared/configs/http.config')).default.post(
+			this.buildUrl(SIGN_UP),
+			dto,
+		)
+
 	signOut = async (configs?: AxiosRequestConfig): Promise<void> =>
 		httpConfig.default.post(this.buildUrl(SIGN_OUT), undefined, configs)
 
@@ -41,6 +54,14 @@ class AuthApi {
 		dto: ChangePasswordDto,
 	): Promise<BaseResponse<void>> =>
 		httpConfig.default.post(this.buildUrl(CHANGE_PASSWORD), dto)
+
+	requestForgotPassword = async (email: string): Promise<BaseResponse<void>> =>
+		httpConfig.default.post(this.buildUrl(FORGOT_PASSWORD_REQUEST), { email })
+
+	resetForgotPassword = async (
+		dto: ResetPasswordDto,
+	): Promise<BaseResponse<void>> =>
+		httpConfig.default.post(this.buildUrl(FORGOT_PASSWORD_RESET), dto)
 }
 
 export default new AuthApi(BASE)

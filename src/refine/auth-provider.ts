@@ -1,3 +1,4 @@
+import { AppToast } from '@/components/ui/toast'
 import { handleError } from '@/lib/axios.util'
 import { ROUTE_PATHS } from '@/shared/common/constants'
 import { useAuthStore } from '@/shared/hooks/use-auth-store'
@@ -40,6 +41,32 @@ export default {
 			})
 		}
 	},
+	register: async ({ email, username, password }) => {
+		try {
+			const { data } = await authApi.default.signUp({
+				email,
+				username,
+				password,
+			})
+
+			AppToast.success('Đăng ký thành công!')
+			return {
+				success: true,
+				redirectTo: SIGN_IN,
+				data,
+			}
+		} catch (error) {
+			const { errorMessage, errorDescription } = handleError(error)
+
+			return {
+				success: false,
+				error: {
+					message: errorDescription,
+					name: errorMessage,
+				},
+			}
+		}
+	},
 	logout: async () => {
 		const { accessToken, clear } = useAuthStore.getState()
 		try {
@@ -63,6 +90,29 @@ export default {
 		return {
 			authenticated: false,
 			redirectTo: SIGN_IN,
+		}
+	},
+	forgotPassword: async ({ email }) => {
+		try {
+			await authApi.default.requestForgotPassword(email)
+
+			AppToast.success(
+				'Gửi yêu cầu thành công!, chúng tôi sẽ gửi email hướng dẫn đặt lại mật khẩu cho bạn',
+			)
+			return {
+				success: true,
+				redirectTo: ROOT,
+			}
+		} catch (error) {
+			const { errorMessage, errorDescription } = handleError(error)
+
+			return {
+				success: false,
+				error: {
+					message: errorDescription,
+					name: errorMessage,
+				},
+			}
 		}
 	},
 	getPermissions: async () => null,

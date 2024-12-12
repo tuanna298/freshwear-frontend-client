@@ -34,7 +34,6 @@ export const userSchema = z.object({
 		.min(1, 'Vui lòng nhập mật khẩu')
 		.optional(),
 	phone_number: z.string().optional().nullable(),
-	dob: z.coerce.date().optional().nullable(),
 	gender: z.nativeEnum(UserGender).optional().nullable(),
 	avatar: z.string().optional().nullable(),
 	address: z.string().optional().nullable(),
@@ -50,9 +49,41 @@ export const signInSchema = userSchema
 	})
 	.required()
 
+export const signUpSchema = userSchema
+	.pick({
+		email: true,
+		username: true,
+		password: true,
+	})
+	.required()
+	.extend({
+		confirm_password: z
+			.string({
+				required_error: 'Vui lòng xác nhận mật khẩu',
+			})
+			.min(1, 'Vui lòng xác nhận mật khẩu'),
+	})
+	.refine((data) => data.password === data.confirm_password, {
+		message: 'Mật khẩu xác nhận không khớp',
+		path: ['confirm_password'],
+	})
+
+export const forgotPasswordSchema = userSchema.pick({
+	email: true,
+})
+
+export const resetPasswordSchema = z.object({
+	new_password: z
+		.string({
+			required_error: 'Vui lòng nhập mật khẩu',
+		})
+		.min(1, 'Vui lòng nhập mật khẩu')
+		.optional(),
+	token: z.string().optional().nullable(),
+})
+
 export const updateProfileSchema = userSchema.pick({
 	full_name: true,
-	dob: true,
 	phone_number: true,
 	gender: true,
 	address: true,
@@ -83,6 +114,11 @@ export const changePasswordSchema = z
 	})
 
 export const signInDefaultValues = ZodUtil.getDefaults(signInSchema)
+export const signUpDefaultValues = ZodUtil.getDefaults(signUpSchema._def.schema)
+export const forgotPasswordDefaultValues =
+	ZodUtil.getDefaults(forgotPasswordSchema)
+export const resetPasswordDefaultValues =
+	ZodUtil.getDefaults(resetPasswordSchema)
 export const userDefaultValues = ZodUtil.getDefaults(userSchema)
 export const updateProfileDefaultValues =
 	ZodUtil.getDefaults(updateProfileSchema)
@@ -92,6 +128,9 @@ export const changePasswordDefaultValues = ZodUtil.getDefaults(
 
 export type User = z.infer<typeof userSchema>
 export type SignInDto = z.infer<typeof signInSchema>
+export type SignUpDto = z.infer<typeof signUpSchema>
+export type ResetPasswordDto = z.infer<typeof resetPasswordSchema>
+export type ForgotPasswordDto = z.infer<typeof forgotPasswordSchema>
 export type UpdateProfileDto = BaseDTO & z.infer<typeof updateProfileSchema>
 export type ChangePasswordDto = z.infer<typeof changePasswordSchema>
 

@@ -11,7 +11,7 @@ export const orderSchema = z.object({
 	address: z.string(),
 	phone_number: z.string(),
 	email: z.string(),
-	full_name: z.string(),
+	receiver_name: z.string(),
 	note: z.string().optional().nullable(),
 	method: z.nativeEnum(PaymentMethod).default(PaymentMethod.CASH),
 	cartItems: z.array(z.object({})),

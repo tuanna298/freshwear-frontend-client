@@ -5,10 +5,12 @@ import { Button } from '@/components/ui/button'
 import {
 	Order,
 	orderDefaultValues,
+	orderSchema,
 	PaymentMethod,
 } from '@/schemas/order.schema'
 import ProductHelper from '@/shared/helpers/product.helper'
 import { useCartStore } from '@/shared/hooks/use-cart-store'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useCreate } from '@refinedev/core'
 import { Fragment } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
@@ -28,13 +30,9 @@ const Checkout = () => {
 			}
 		},
 	})
-	const {
-		register,
-		handleSubmit,
-		watch,
-		formState: { errors },
-	} = useForm<Order>({
+	const { register, handleSubmit } = useForm<Order>({
 		defaultValues: orderDefaultValues,
+		resolver: zodResolver(orderSchema),
 	})
 	const onSubmit: SubmitHandler<Order> = (data: Order) => {
 		mutate(
@@ -64,7 +62,7 @@ const Checkout = () => {
 			<div
 				className="pb-[65px] pr-0 ps-0 pt-[69px]"
 				style={{
-					backgroundImage: 'url(assets/img/other/page-title-blog.png)',
+					backgroundImage: 'url(/assets/img/other/page-title-blog.png)',
 					backgroundRepeat: 'no-repeat',
 					backgroundSize: 'cover',
 				}}

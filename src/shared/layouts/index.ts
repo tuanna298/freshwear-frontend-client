@@ -5,4 +5,14 @@ const AppLayout = lazy(async () => {
 	return import('./app-layout')
 })
 
-export { AppLayout }
+const ProtectedLayout = lazy(async () => {
+	await new Promise((r) => setTimeout(r, 300))
+	return import('./protected-layout')
+})
+
+const PublicLayout = lazy(async () => {
+	await new Promise((r) => setTimeout(r, 300))
+	return import('./public-layout')
+})
+
+export { AppLayout, ProtectedLayout, PublicLayout }

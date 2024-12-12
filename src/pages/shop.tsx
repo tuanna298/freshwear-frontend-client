@@ -43,7 +43,7 @@ const Shop = () => {
 			<div
 				className="pb-[65px] pr-0 ps-0 pt-[69px]"
 				style={{
-					backgroundImage: 'url(assets/img/other/page-title-blog.png)',
+					backgroundImage: 'url(/assets/img/other/page-title-blog.png)',
 					backgroundRepeat: 'no-repeat',
 					backgroundSize: 'cover',
 				}}

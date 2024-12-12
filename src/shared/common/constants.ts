@@ -6,12 +6,15 @@ export const API_PATHS = {
 	AUTH: {
 		BASE: '/auth',
 		SIGN_IN: '/sign-in',
+		SIGN_UP: '/sign-up',
 		SIGN_OUT: '/sign-out',
 		ME: {
 			BASE: '/me',
 			UPDATE_PROFILE: '/me/update-profile',
 			CHANGE_PASSWORD: '/me/change-password',
 		},
+		FORGOT_PASSWORD_REQUEST: '/forgot-password/request',
+		FORGOT_PASSWORD_RESET: '/forgot-password/reset',
 	},
 	USER: {
 		BASE: '/user',
@@ -68,4 +71,13 @@ export const ACTION_MAP: Record<string, string> = {
 	update: 'Cập nhật',
 	delete: 'Xóa',
 	undefined: 'Thao tác',
+}
+
+export const AUTH_KEYS = {
+	AUTH: 'auth',
+	PROFILE: 'profile',
+}
+
+export const AUTH_FORM_KEYS = {
+	SIGN_IN: 'sign-in-form',
 }
