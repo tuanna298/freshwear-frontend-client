@@ -172,6 +172,7 @@ const Checkout = () => {
 									<textarea
 										id="note"
 										className="mt-[10px] h-[112px] w-full resize-none rounded-[3px] border bg-white px-[18px] py-[12px] text-[14px] font-[400] leading-[24px] shadow-none outline-0 transition-[all_0.3s_ease] "
+										{...register('note')}
 									/>
 								</fieldset>
 							</div>

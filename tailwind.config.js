@@ -7,6 +7,16 @@ export default {
 	darkMode: ['class'],
 	content: ['./index.html', './src/**/*.{ts,tsx,js,jsx}'],
 	theme: {
+		screens: {
+			xxs: '320px',
+			xs: '420px',
+			sm: '640px',
+			md: '768px',
+			lg: '1024px',
+			xl: '1280px',
+			'2xl': '1601px',
+			'3xl': '1900px',
+		},
 		extend: {
 			fontFamily: {
 				montserrat: ['Montserrat', 'sans-serif'],

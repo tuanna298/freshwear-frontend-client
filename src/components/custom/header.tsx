@@ -50,7 +50,9 @@ export const Header = () => {
 						profile ? (
 							<>
 								<span className="mr-5">FRESHWEAR</span>
-								<span className="text-xl">xin chào, {profile.full_name}</span>
+								<span className="text-base 2xl:text-xl">
+									xin chào, {profile.full_name}
+								</span>
 							</>
 						) : (
 							'FRESHWEAR'
