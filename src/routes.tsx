@@ -5,6 +5,7 @@ import MyOrders from './components/custom/my-account/my-orders'
 import MyProfile from './components/custom/my-account/my-profile'
 import {
 	Checkout,
+	ErrorComponent,
 	Home,
 	MyAccount,
 	OrderSuccess,
@@ -143,6 +144,8 @@ export default () => {
 						/>
 					</Route>
 				</Route>
+
+				<Route path="*" element={<ErrorComponent />} />
 			</Route>
 		</Routes>
 	)

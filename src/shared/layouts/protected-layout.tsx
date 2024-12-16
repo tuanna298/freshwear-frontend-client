@@ -9,10 +9,10 @@ const { SIGN_IN } = ROUTE_PATHS
 const { AUTH, PROFILE } = AUTH_KEYS
 
 const ProtectedLayout = () => {
-	const { accessToken, setProfile } = useAuthStore()
+	const { accessToken, refreshToken, setProfile } = useAuthStore()
 	const { data } = useGetIdentity<User>({
 		queryOptions: {
-			queryKey: [AUTH, PROFILE, accessToken],
+			queryKey: [AUTH, PROFILE, accessToken, refreshToken],
 		},
 	})
 
@@ -22,7 +22,7 @@ const ProtectedLayout = () => {
 		}
 	}, [data])
 
-	if (!accessToken) {
+	if (!accessToken || !refreshToken) {
 		return <Navigate to={SIGN_IN} />
 	}
 

@@ -9,6 +9,7 @@ import {
 	PaymentMethod,
 } from '@/schemas/order.schema'
 import ProductHelper from '@/shared/helpers/product.helper'
+import { useAuthStore } from '@/shared/hooks/use-auth-store'
 import { useCartStore } from '@/shared/hooks/use-cart-store'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useCreate } from '@refinedev/core'
@@ -19,6 +20,7 @@ import { useNavigate } from 'react-router-dom'
 const Checkout = () => {
 	const navigate = useNavigate()
 	const { items, deleteAll } = useCartStore()
+	const { profile } = useAuthStore()
 	const totalPrice = ProductHelper.getTotalCartPrice(items)
 
 	const { mutate } = useCreate<Order>({
@@ -39,6 +41,7 @@ const Checkout = () => {
 			{
 				values: {
 					...data,
+					user_id: profile?.id,
 					cartItems: (items || []).map((item: any) => ({
 						product_detail_id: item?.size?.product_detail_id,
 						quantity: item?.quantity,
@@ -49,7 +52,9 @@ const Checkout = () => {
 			},
 			{
 				onSuccess() {
-					navigate('/order-success')
+					navigate('/order-success', {
+						preventScrollReset: false,
+					})
 					deleteAll()
 				},
 			},

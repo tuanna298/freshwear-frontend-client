@@ -23,12 +23,12 @@ import { Product } from '@/schemas/product.schema'
 import ProductHelper from '@/shared/helpers/product.helper'
 import { HttpError, useList } from '@refinedev/core'
 import { ListFilter } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Fragment } from 'react/jsx-runtime'
 
 const Shop = () => {
 	const [grid, setGrid] = useState<2 | 3 | 4 | 5 | 6>(4)
-	const { data } = useList<Product, HttpError>({
+	const { data, refetch } = useList<Product, HttpError>({
 		resource: 'product',
 		pagination: {
 			pageSize: 12,
@@ -36,6 +36,10 @@ const Shop = () => {
 	})
 
 	const products = data?.data ? ProductHelper.transform(data.data) : []
+
+	useEffect(() => {
+		refetch()
+	}, [])
 
 	return (
 		<Fragment>

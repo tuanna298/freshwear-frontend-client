@@ -20,42 +20,46 @@ const mapSizeToSizeClient = (detail: ProductDetail): SizeClient => {
 }
 
 const mapProductResponseToClient = (product: Product): ProductClient => {
+	if (!product) return {} as ProductClient
+
 	const variations: Variation[] = []
-	const images: string[] = product.thumbnail ? [product.thumbnail] : []
+	const images: string[] = product?.thumbnail ? [product.thumbnail] : []
 	let minPrice = Number.MAX_SAFE_INTEGER
 	let maxPrice = Number.MIN_SAFE_INTEGER
 	const thresholdInMilliseconds = 7 * 24 * 60 * 60 * 1000
 	const currentTime = new Date().getTime()
-	const isNew = product.created_at
-		? currentTime - new Date(product.created_at).getTime() <
+	const isNew = product?.created_at
+		? currentTime - new Date(product?.created_at).getTime() <
 			thresholdInMilliseconds
 		: false
 
 	product?.details?.forEach((detail) => {
-		if (detail.image) {
-			images.push(detail.image)
-			const existingVariation = variations.find(
-				(v) => v.color.id === detail.color.id,
-			)
-			if (existingVariation) {
-				existingVariation.size.push(
-					mapSizeToSizeClient(detail as ProductDetail),
-				)
+		const existingVariation = variations.find(
+			(v) => v.color.id === detail.color.id,
+		)
+
+		if (existingVariation) {
+			existingVariation.size.push(mapSizeToSizeClient(detail as ProductDetail))
+			if (detail.image) {
 				existingVariation.image.push(detail.image)
-
-				minPrice = Math.min(minPrice, detail.price)
-				maxPrice = Math.max(maxPrice, detail.price)
-			} else {
-				const newVariation: Variation = {
-					color: detail.color as Color,
-					image: [detail.image].filter(Boolean),
-					size: [mapSizeToSizeClient(detail as ProductDetail)],
-				}
-				variations.push(newVariation)
-
-				minPrice = Math.min(minPrice, detail.price)
-				maxPrice = Math.max(maxPrice, detail.price)
+				images.push(detail.image)
 			}
+
+			minPrice = Math.min(minPrice, detail.price)
+			maxPrice = Math.max(maxPrice, detail.price)
+		} else {
+			const newVariation: Variation = {
+				color: detail.color as Color,
+				image: detail.image ? [detail.image] : [],
+				size: [mapSizeToSizeClient(detail as ProductDetail)],
+			}
+			if (detail.image) {
+				images.push(detail.image)
+			}
+			variations.push(newVariation)
+
+			minPrice = Math.min(minPrice, detail.price)
+			maxPrice = Math.max(maxPrice, detail.price)
 		}
 	})
 
@@ -65,9 +69,9 @@ const mapProductResponseToClient = (product: Product): ProductClient => {
 	}
 
 	return {
-		id: product.id!,
-		code: product.code,
-		name: product.name,
+		id: product?.id!,
+		code: product?.code,
+		name: product?.name,
 		price: {
 			min: minPrice,
 			max: maxPrice,
@@ -84,9 +88,12 @@ const mapProductResponseToClient = (product: Product): ProductClient => {
 export default class ProductHelper {
 	static transform = (products: Product[]) => {
 		return products.map(mapProductResponseToClient).map((product) => {
-			product.image.sort()
+			if (!product) return {} as ProductClient
+			;(product?.image ?? []).sort()
 
-			product.variation.sort((a, b) => a.color.name.localeCompare(b.color.name))
+			;(product?.variation || []).sort((a, b) =>
+				a.color.name.localeCompare(b.color.name),
+			)
 
 			product?.variation?.forEach((variation) => {
 				variation.size.sort((a, b) => a.name.localeCompare(b.name))

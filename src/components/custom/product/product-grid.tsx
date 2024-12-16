@@ -5,7 +5,7 @@ import { HttpError, useList } from '@refinedev/core'
 import { motion, Variants } from 'framer-motion'
 import { uniqBy } from 'lodash'
 import { Heart } from 'lucide-react'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useOnClickOutside } from 'usehooks-ts'
 import { Button } from '../../ui/button'
 import { NumberField } from '../number-field'
@@ -13,7 +13,7 @@ import ProductCompare from './product-compare'
 import ProductModal from './product-modal'
 
 export const ProductGrid = () => {
-	const { data } = useList<Product, HttpError>({
+	const { data, refetch } = useList<Product, HttpError>({
 		resource: 'product',
 		pagination: {
 			pageSize: 12,
@@ -21,6 +21,10 @@ export const ProductGrid = () => {
 	})
 
 	const products = data?.data ? ProductHelper.transform(data.data) : []
+
+	useEffect(() => {
+		refetch()
+	}, [])
 
 	return (
 		<div className="container m-auto pt-[100px]">

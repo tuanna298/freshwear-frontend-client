@@ -14,7 +14,7 @@ export const orderSchema = z.object({
 	receiver_name: z.string(),
 	note: z.string().optional().nullable(),
 	method: z.nativeEnum(PaymentMethod).default(PaymentMethod.CASH),
-	cartItems: z.array(z.object({})),
+	cartItems: z.array(z.object({})).optional().nullable(),
 })
 
 export const orderDefaultValues = ZodUtil.getDefaults(orderSchema)

@@ -10,16 +10,17 @@ const authApi = await import('@/shared/apis/auth.api')
 
 export default {
 	login: async ({ username, password }) => {
-		const { setAccessToken, clear } = useAuthStore.getState()
+		const { setAccessToken, setRefreshToken, clear } = useAuthStore.getState()
 		try {
 			const {
-				data: { access_token },
+				data: { access_token, refresh_token },
 			} = await authApi.default.signIn({
 				username,
 				password,
 			})
 
 			setAccessToken(access_token)
+			setRefreshToken(refresh_token)
 
 			return Promise.resolve({
 				success: true,
@@ -87,9 +88,36 @@ export default {
 		}
 	},
 	check: async () => {
-		return {
-			authenticated: false,
-			redirectTo: SIGN_IN,
+		const { accessToken, clear } = useAuthStore.getState()
+
+		if (accessToken) {
+			try {
+				authApi.default.signOut({
+					headers: {
+						Authorization: `Bearer ${accessToken}`,
+					},
+				})
+
+				return {
+					authenticated: true,
+				}
+			} catch (error) {
+				clear()
+				console.error('Error fetching identity:', error)
+				return {
+					authenticated: false,
+					error: { message: 'Kiểm tra thất bại', name: 'Token không hợp lệ' },
+					logout: true,
+					redirectTo: SIGN_IN,
+				}
+			}
+		} else {
+			return {
+				authenticated: false,
+				error: { message: 'Kiểm tra thất bại', name: 'Token không hợp lệ' },
+				logout: true,
+				redirectTo: SIGN_IN,
+			}
 		}
 	},
 	forgotPassword: async ({ email }) => {
@@ -127,7 +155,6 @@ export default {
 			return null
 		}
 	},
-
 	onError: async (error) => {
 		return { error }
 	},

@@ -55,9 +55,15 @@ const SignUp = lazy(async () => {
 	return import('./sign-up')
 })
 
+const ErrorComponent = lazy(async () => {
+	await new Promise((r) => setTimeout(r, 300))
+	return import('./error-component')
+})
+
 export {
 	Checkout,
 	Compare,
+	ErrorComponent,
 	Home,
 	MyAccount,
 	OrderSuccess,

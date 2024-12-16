@@ -1,6 +1,8 @@
 import { HeaderPlacholder } from '@/components/custom/header'
 import { NumberField } from '@/components/custom/number-field'
 import { PageSection } from '@/components/custom/page'
+import ProductDetailInfo from '@/components/custom/product/detail/product-detail-info'
+import ProductDetailTabs from '@/components/custom/product/detail/product-detail-tabs'
 import { ProductGridSingle } from '@/components/custom/product/product-grid'
 import {
 	Carousel,
@@ -23,29 +25,32 @@ import { StarRating } from '@/components/ui/star-rating'
 import { AppToast } from '@/components/ui/toast'
 import { cn } from '@/lib/utils'
 import { Color } from '@/schemas/color.schema'
-import { Product, SizeClient } from '@/schemas/product.schema'
+import { Product, ProductClient, SizeClient } from '@/schemas/product.schema'
 import ProductHelper from '@/shared/helpers/product.helper'
 import { useCartStore } from '@/shared/hooks/use-cart-store'
 import { HttpError, useList, useOne } from '@refinedev/core'
-import { uniqBy } from 'lodash'
-import {
-	CircleSlash2,
-	Dam,
-	Flame,
-	Heart,
-	Minus,
-	Plus,
-	Ship,
-	Shuffle,
-	UndoDot,
-	WashingMachine,
-} from 'lucide-react'
+import { Heart, Minus, Plus, Shuffle } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { Fragment } from 'react/jsx-runtime'
 
+const productPlaceholder: ProductClient = {
+	id: '',
+	code: '',
+	name: '',
+	price: {
+		min: 0,
+		max: 0,
+	},
+	sale_count: 0,
+	average_rating: 0,
+	new: false,
+	variation: [],
+	image: [''],
+	description: '',
+}
+
 const ProductDetail = () => {
-	const navigate = useNavigate()
 	const { id } = useParams<{ id: string }>()
 	const { data: dataOne } = useOne<Product, HttpError>({
 		resource: 'product',
@@ -66,13 +71,15 @@ const ProductDetail = () => {
 		],
 	})
 
-	const products = data?.data ? ProductHelper.transform(data.data) : []
-	const product = dataOne?.data && ProductHelper.transform([dataOne.data])[0]
+	const [product, setProduct] = useState<ProductClient>(productPlaceholder)
 
-	if (!product) {
-		navigate('/404')
-		return null
-	}
+	const products = data?.data ? ProductHelper.transform(data.data) : []
+
+	useEffect(() => {
+		if (dataOne?.data) {
+			setProduct(ProductHelper.transform([dataOne.data])[0])
+		}
+	}, [dataOne?.data])
 
 	const { items, add } = useCartStore()
 
@@ -95,6 +102,29 @@ const ProductDetail = () => {
 	const [selectedProductSize, setSelectedProductSize] =
 		useState(initialSelectedSize)
 
+	useEffect(() => {
+		if (!selectedVariant && product) {
+			setSelectedVariant(
+				product?.variation?.length > 0 ? product.variation[0] : undefined,
+			)
+			setSelectedProductSize(
+				product?.variation && product.variation?.length > 0
+					? product?.variation[0].size[0]
+					: ({} as SizeClient),
+			)
+			setSelectedProductColor(
+				product?.variation && product.variation?.length > 0
+					? product?.variation[0].color
+					: ({} as Color),
+			)
+			setProductStock(
+				product?.variation && product.variation?.length > 0
+					? product?.variation[0].size[0].stock
+					: 0,
+			)
+		}
+	}, [product])
+
 	const [selectedVariant, setSelectedVariant] = useState(
 		product?.variation?.length > 0 ? product.variation[0] : undefined,
 	)
@@ -114,15 +144,6 @@ const ProductDetail = () => {
 
 	const isButtonDisabled = quantityCount > productStock - productCartQty
 
-	const sizes = uniqBy(
-		(product?.variation || []).flatMap((v) => v.size.map((s) => s)),
-		'id',
-	)
-	const colors = uniqBy(
-		(product?.variation || []).map((v) => v.color),
-		'id',
-	)
-
 	useEffect(() => {
 		const selectedVariant = product?.variation?.find(
 			(variation) => variation.color.id === selectedProductColor.id,
@@ -133,6 +154,21 @@ const ProductDetail = () => {
 	return (
 		<Fragment>
 			<HeaderPlacholder />
+			<div
+				className="pb-[65px] pr-0 ps-0 pt-[69px]"
+				style={{
+					backgroundImage: 'url(/assets/img/other/page-title-blog.png)',
+					backgroundRepeat: 'no-repeat',
+					backgroundSize: 'cover',
+				}}
+			>
+				<div className="mx-auto my-0 w-full max-w-full pr-[40px] ps-[40px]">
+					<div className="text-center text-[42px] font-[400] leading-[50px]">
+						Chi tiết sản phẩm
+					</div>
+				</div>
+			</div>
+
 			<PageSection>
 				{/* breadcrumb */}
 				<div className="flex flex-wrap items-center px-0 py-[30px] ">
@@ -143,7 +179,7 @@ const ProductDetail = () => {
 							</BreadcrumbItem>
 							<BreadcrumbSeparator />
 							<BreadcrumbItem>
-								<BreadcrumbPage>Product title</BreadcrumbPage>
+								<BreadcrumbPage>{product.name}</BreadcrumbPage>
 							</BreadcrumbItem>
 						</BreadcrumbList>
 					</Breadcrumb>
@@ -158,35 +194,39 @@ const ProductDetail = () => {
 						<CarouselThumbsContainer className="h-full max-h-[1000px] gap-2">
 							{selectedVariant?.image &&
 								selectedVariant.image?.length > 0 &&
-								(selectedVariant?.image).map((_, index) => (
+								(selectedVariant?.image).map((src, index) => (
 									<SliderThumbItem
 										key={index}
 										index={index}
 										className="rounded-md bg-transparent p-0"
 									>
-										<span className="flex h-full w-full cursor-pointer items-center justify-center rounded-md border border-muted bg-background">
-											Slide {index + 1}
-										</span>
+										<img
+											className="flex h-full w-full cursor-pointer items-center justify-center rounded-md border border-muted bg-background"
+											src={src || 'assets/img/other/placeholder.jpg'}
+										/>
 									</SliderThumbItem>
 								))}
 						</CarouselThumbsContainer>
 						<div className="relative flex-grow basis-3/4">
-							<CarouselMainContainer className="h-[1000px]">
+							<CarouselMainContainer>
 								{selectedVariant?.image &&
 									selectedVariant.image?.length > 0 &&
-									(selectedVariant?.image).map((_, index) => (
+									(selectedVariant?.image).map((src, index) => (
 										<SliderMainItem
 											key={index}
-											className="flex items-center justify-center rounded-md border border-muted"
+											className="flex items-center justify-center rounded-md border border-muted p-0"
 										>
-											Slide {index + 1}
+											<img
+												className="flex h-full w-full cursor-pointer items-center justify-center rounded-md border border-muted bg-background object-cover"
+												src={src || 'assets/img/other/placeholder.jpg'}
+											/>
 										</SliderMainItem>
 									))}
 							</CarouselMainContainer>
 						</div>
 					</Carousel>
 					<div className="flex flex-col gap-5">
-						<h3 className="text-3xl">Product name</h3>
+						<h3 className="text-3xl">{product.name}</h3>
 
 						{/* price */}
 						<NumberField
@@ -213,81 +253,87 @@ const ProductDetail = () => {
 								</span>
 							</div>
 							<div className="flex flex-wrap items-center gap-[10px]">
-								{colors.map((color) => (
-									<React.Fragment key={color.id}>
-										<input
-											type="radio"
-											id={color.id as string}
-											className="!absolute -m-[1px] h-[1px] w-[1px] overflow-hidden border-none p-0"
-											style={{
-												clip: 'rect(0 0 0 0)',
-												wordWrap: 'normal',
-											}}
-											checked={color.id === selectedProductColor.id}
-											onChange={() => {
-												setSelectedProductColor(color)
-												setSelectedProductSize(sizes[0])
-												setProductStock(sizes[0].stock)
-												setQuantityCount(1)
-											}}
-										/>
-										<label
-											htmlFor={color.id as string}
-											className={cn(
-												'relative h-[36px] w-[36px] cursor-pointer !rounded-[60px] border border-transparent p-[5px] text-center font-[400] leading-[22.4px] transition-[all_0.3s_ease]',
-												color.id === selectedProductColor.id &&
-													'border-primary shadow-[0_0.4rem_0.4rem_rgba(0,0,0,0.102)]',
-											)}
-										>
-											<span
-												className="block h-full w-full rounded-full border border-[#8787871E]"
+								{product.variation &&
+									product.variation.sort().map((single) => (
+										<React.Fragment key={single.color.id}>
+											<input
+												type="radio"
+												id={single.color.id as string}
+												className="!absolute -m-[1px] h-[1px] w-[1px] overflow-hidden border-none p-0"
 												style={{
-													backgroundColor: color.code,
+													clip: 'rect(0 0 0 0)',
+													wordWrap: 'normal',
+												}}
+												checked={single.color.id === selectedProductColor.id}
+												onChange={() => {
+													setSelectedProductColor(single.color)
+													setSelectedProductSize(single.size[0])
+													setProductStock(single.size[0].stock)
+													setQuantityCount(1)
 												}}
 											/>
-										</label>
-									</React.Fragment>
-								))}
+											<label
+												htmlFor={single.color.id as string}
+												className={cn(
+													'relative h-[36px] w-[36px] cursor-pointer !rounded-[60px] border border-transparent p-[5px] text-center font-[400] leading-[22.4px] transition-[all_0.3s_ease]',
+													single.color.id === selectedProductColor.id &&
+														'border-primary shadow-[0_0.4rem_0.4rem_rgba(0,0,0,0.102)]',
+												)}
+											>
+												<span
+													className="block h-full w-full rounded-full border border-[#8787871E]"
+													style={{
+														backgroundColor: single.color.code,
+													}}
+												/>
+											</label>
+										</React.Fragment>
+									))}
 							</div>
 						</div>
 						{/* variant picker */}
 						<div>
 							<div className="mb-[15px]">
-								Size:
+								Kích cỡ:
 								<span className="ms-3 font-bold">
 									{selectedProductSize.name}
 								</span>
 							</div>
 							<div className="flex flex-wrap items-center gap-[10px]">
-								{sizes.map((size) => (
-									<React.Fragment key={size.id}>
-										<input
-											type="radio"
-											id={size.id as string}
-											className="!absolute -m-[1px] h-[1px] w-[1px] overflow-hidden border-none p-0"
-											style={{
-												clip: 'rect(0 0 0 0)',
-												wordWrap: 'normal',
-											}}
-											checked={size.id === selectedProductSize.id}
-											onChange={() => {
-												setSelectedProductSize(size)
-												setProductStock(size.stock)
-												setQuantityCount(1)
-											}}
-										/>
-										<label
-											htmlFor={size.id.toString()}
-											className={cn(
-												'relative h-[38px] w-max min-w-[45px] cursor-pointer rounded-[3px] border border-[#8787871E] px-[15px] py-[7px] text-center font-[400] leading-[22.4px] transition-[all_0.3s_ease]',
-												size.id === selectedProductSize.id &&
-													'border-primary bg-primary text-white shadow-[0_0.4rem_0.4rem_rgba(0,0,0,0.102)]',
-											)}
-										>
-											{size.name}
-										</label>
-									</React.Fragment>
-								))}
+								{product.variation &&
+									product.variation.sort().map(
+										(single) =>
+											single.color.id === selectedProductColor.id &&
+											single.size.map((size) => (
+												<React.Fragment key={size.id}>
+													<input
+														type="radio"
+														id={size.id as string}
+														className="!absolute -m-[1px] h-[1px] w-[1px] overflow-hidden border-none p-0"
+														style={{
+															clip: 'rect(0 0 0 0)',
+															wordWrap: 'normal',
+														}}
+														checked={size.id === selectedProductSize.id}
+														onChange={() => {
+															setSelectedProductSize(size)
+															setProductStock(size.stock)
+															setQuantityCount(1)
+														}}
+													/>
+													<label
+														htmlFor={size.id as string}
+														className={cn(
+															'relative h-[38px] w-max min-w-[45px] cursor-pointer rounded-[3px] border border-[#8787871E] px-[15px] py-[7px] text-center font-[400] leading-[22.4px] transition-[all_0.3s_ease]',
+															size.id === selectedProductSize.id &&
+																'border-primary bg-primary text-white shadow-[0_0.4rem_0.4rem_rgba(0,0,0,0.102)]',
+														)}
+													>
+														{size.name}
+													</label>
+												</React.Fragment>
+											)),
+									)}
 							</div>
 						</div>
 
@@ -397,162 +443,12 @@ const ProductDetail = () => {
 							</Button>
 						</div>
 						<Separator />
-						<div className="grid grid-cols-2 gap-10">
-							<div className="flex flex-col items-center gap-[16px] rounded-[2.5px] border px-[28px] py-[30px] text-center text-sm">
-								<Ship />
-								<p>
-									Thời gian giao hàng dự kiến:{' '}
-									<span className="font-bold">2-3 ngày</span>,{' '}
-									<span className="font-bold text-destructive">miễn phí</span>{' '}
-									vận chuyển cho{' '}
-									<span className="font-bold">toàn bộ đơn hàng</span>
-								</p>
-							</div>
-							<div className="flex flex-col items-center gap-[16px] rounded-[2.5px] border px-[28px] py-[30px] text-center text-sm">
-								<UndoDot />
-								<p>
-									Hoàn trả trong vòng <span className="font-bold">30 ngày</span>{' '}
-									kể từ ngày mua hàng. Không bao gồm thuế và các chi phí.
-								</p>
-							</div>
-						</div>
+						<ProductDetailInfo />
 					</div>
 				</div>
 
 				{/* product description */}
-				<div className="mb-[80px] border">
-					{/* menu tab */}
-					<ul className="mx-[38px] my-0 flex list-none gap-[50px] gap-y-[10px] overflow-x-auto border-b ps-0">
-						<li
-							className={cn(
-								'relative mb-0 cursor-pointer list-none px-0 py-[15px] text-[18px] font-[600] leading-[30px]',
-								// active tab
-								'after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:bg-primary after:transition-[all_0.3s_ease] after:content-[""]',
-							)}
-						>
-							Mô tả
-						</li>
-						<li
-							className={cn(
-								'relative mb-0 cursor-pointer list-none px-0 py-[15px] text-[18px] font-[600] leading-[30px]',
-							)}
-						>
-							Đánh giá
-						</li>
-						<li
-							className={cn(
-								'relative mb-0 cursor-pointer list-none px-0 py-[15px] text-[18px] font-[600] leading-[30px]',
-							)}
-						>
-							Vận chuyển
-						</li>
-						<li
-							className={cn(
-								'relative mb-0 cursor-pointer list-none px-0 py-[15px] text-[18px] font-[600] leading-[30px]',
-							)}
-						>
-							Chính sách
-						</li>
-					</ul>
-					{/* content tab */}
-					<div className="relative overflow-hidden">
-						<div
-							className={cn(
-								'pointer-events-none invisible absolute left-0 right-0 top-0 z-[1] block transform p-[35px] opacity-0 duration-200 ease-in',
-								// active tab
-								'transfrom-none pointer-events-auto visible relative z-[2] opacity-100 delay-300 duration-300 ease-out',
-							)}
-						>
-							<div>
-								<p className="mb-[30px]">
-									A stylish ribbed modal T-shirt made with breathable fabric,
-									perfect for everyday wear.
-								</p>
-
-								{/* features */}
-								<div className="grid grid-cols-3 gap-[30px]">
-									<div>
-										<h3 className="mb-[22px] !text-[16px] !font-bold leading-[19px]">
-											Đặc điểm
-										</h3>
-										<ul className="mb-[30px] mt-[15px] list-disc ps-0">
-											<li className="relative mb-[15px] list-inside ps-[20px] text-sm leading-[25px] text-[#909090]">
-												Front button placket
-											</li>
-											<li className="relative mb-[15px] list-inside ps-[20px] text-sm leading-[25px] text-[#909090]">
-												Adjustable sleeve tabs
-											</li>
-											<li className="relative mb-[15px] list-inside ps-[20px] text-sm leading-[25px] text-[#909090]">
-												Babaton embroidered crest at placket and hem
-											</li>
-										</ul>
-
-										<h3 className="mb-[22px] !text-[16px] !font-bold leading-[19px]">
-											Materials Care
-										</h3>
-										<ul className="mb-[30px] mt-[15px] list-disc ps-0">
-											<li className="relative mb-[15px] list-inside ps-[20px] text-sm leading-[25px] text-[#909090]">
-												Content: 100% LENZING™ ECOVERO™ Viscose
-											</li>
-											<li className="relative mb-[15px] list-inside ps-[20px] text-sm leading-[25px] text-[#909090]">
-												Care: Hand wash
-											</li>
-											<li className="relative mb-[15px] list-inside ps-[20px] text-sm leading-[25px] text-[#909090]">
-												Imported
-											</li>
-										</ul>
-									</div>
-									<div className="col-span-2">
-										<h3 className="mb-[22px] !text-[16px] !font-bold leading-[19px]">
-											Materials Care
-										</h3>
-
-										<div className="mb-[15px] flex items-center gap-[10px]">
-											<div className="flex h-[30px] w-[30px] items-center justify-center rounded-full border border-primary">
-												<WashingMachine size={16} />
-											</div>
-											<span className="text-sm text-[#909090]">
-												Machine wash max. 30ºC. Short spin.
-											</span>
-										</div>
-										<div className="mb-[15px] flex items-center gap-[10px]">
-											<div className="flex h-[30px] w-[30px] items-center justify-center rounded-full border border-primary">
-												<Flame size={16} />
-											</div>
-											<span className="text-sm text-[#909090]">
-												Iron maximum 110ºC.
-											</span>
-										</div>
-										<div className="mb-[15px] flex items-center gap-[10px]">
-											<div className="flex h-[30px] w-[30px] items-center justify-center rounded-full border border-primary">
-												<CircleSlash2 size={16} />
-											</div>
-											<span className="text-sm text-[#909090]">
-												Do not bleach/bleach.
-											</span>
-										</div>
-										<div className="mb-[15px] flex items-center gap-[10px]">
-											<div className="flex h-[30px] w-[30px] items-center justify-center rounded-full border border-primary">
-												<CircleSlash2 size={16} />
-											</div>
-											<span className="text-sm text-[#909090]">
-												Do not dry clean.
-											</span>
-										</div>
-										<div className="mb-[15px] flex items-center gap-[10px]">
-											<div className="flex h-[30px] w-[30px] items-center justify-center rounded-full border border-primary">
-												<Dam size={16} />
-											</div>
-											<span className="text-sm text-[#909090]">
-												Tumble dry, medium hear.
-											</span>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
+				<ProductDetailTabs product={product} />
 
 				{/* related */}
 				<div className="mb-[60px] flex flex-col items-center px-[15px]">

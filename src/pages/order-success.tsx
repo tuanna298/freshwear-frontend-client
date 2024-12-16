@@ -37,7 +37,11 @@ const OrderSuccess = () => {
 					</p>
 					<Button
 						className="h-full flex-grow rounded-[3px] px-[24px] py-[14px] text-center text-base font-semibold transition-[all_0.3s_ease]"
-						onClick={() => navigate('/')}
+						onClick={() =>
+							navigate('/', {
+								preventScrollReset: false,
+							})
+						}
 					>
 						Tiếp tục mua sắm
 					</Button>

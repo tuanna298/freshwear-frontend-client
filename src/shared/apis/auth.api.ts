@@ -7,13 +7,19 @@ import {
 	User,
 } from '@/schemas/auth/user.schema'
 import { API_PATHS } from '@/shared/common/constants'
-import { AuthTokens, BaseResponse } from '@/shared/common/interfaces'
+import {
+	AuthTokens,
+	BaseResponse,
+	RefreshBody,
+} from '@/shared/common/interfaces'
 import { AxiosRequestConfig } from 'axios'
 
 const {
 	AUTH: {
 		BASE,
 		SIGN_IN,
+		REFRESH,
+		INTROSPECT,
 		SIGN_UP,
 		SIGN_OUT,
 		FORGOT_PASSWORD_REQUEST,
@@ -36,10 +42,7 @@ class AuthApi {
 	signUp = async (
 		dto: Omit<SignUpDto, 'confirm_password'>,
 	): Promise<BaseResponse<void>> =>
-		(await import('@/shared/configs/http.config')).default.post(
-			this.buildUrl(SIGN_UP),
-			dto,
-		)
+		httpConfig.default.post(this.buildUrl(SIGN_UP), dto)
 
 	signOut = async (configs?: AxiosRequestConfig): Promise<void> =>
 		httpConfig.default.post(this.buildUrl(SIGN_OUT), undefined, configs)
@@ -62,6 +65,17 @@ class AuthApi {
 		dto: ResetPasswordDto,
 	): Promise<BaseResponse<void>> =>
 		httpConfig.default.post(this.buildUrl(FORGOT_PASSWORD_RESET), dto)
+
+	refresh = async (
+		dto: RefreshBody,
+	): Promise<BaseResponse<Pick<AuthTokens, 'access_token'>>> =>
+		(await import('@/shared/configs/http.config')).default.post(
+			this.buildUrl(REFRESH),
+			dto,
+		)
+
+	introspect = async (token: string): Promise<BaseResponse<void>> =>
+		httpConfig.default.post(this.buildUrl(INTROSPECT), { token })
 }
 
 export default new AuthApi(BASE)

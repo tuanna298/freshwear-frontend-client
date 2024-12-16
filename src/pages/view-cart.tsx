@@ -7,14 +7,14 @@ import ProductHelper from '@/shared/helpers/product.helper'
 import { useCartStore } from '@/shared/hooks/use-cart-store'
 import { HttpError, useList } from '@refinedev/core'
 import { Minus, Plus } from 'lucide-react'
-import { Fragment } from 'react'
+import { Fragment, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
 const ViewCart = () => {
 	const navigate = useNavigate()
 	const { items, decrease, add, deleteOne, deleteAll } = useCartStore()
 
-	const { data } = useList<Product, HttpError>({
+	const { data, refetch } = useList<Product, HttpError>({
 		resource: 'product',
 		pagination: {
 			current: 1,
@@ -29,6 +29,10 @@ const ViewCart = () => {
 	})
 
 	const products = data?.data ? ProductHelper.transform(data.data) : []
+
+	useEffect(() => {
+		refetch()
+	}, [])
 
 	return (
 		<Fragment>

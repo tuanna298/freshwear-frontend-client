@@ -68,6 +68,7 @@ const ShoppingCart = () => {
 											{/* image */}
 											<Link
 												to={`product-detail/${item.id}`}
+												state={{ data: item }}
 												className="inline-block h-[110px] w-[80px] cursor-pointer text-primary no-underline transition-[all_0.3s_ease]"
 											>
 												<img
@@ -179,7 +180,9 @@ const ShoppingCart = () => {
 								className="w-full rounded-[3px]"
 								type="button"
 								onClick={() => {
-									navigate('/checkout')
+									navigate('/checkout', {
+										preventScrollReset: true,
+									})
 									setIsOpen(false)
 								}}
 							>

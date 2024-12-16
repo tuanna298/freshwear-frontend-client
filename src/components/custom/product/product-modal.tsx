@@ -21,7 +21,6 @@ import { Color } from '@/schemas/color.schema'
 import { ProductClient, SizeClient } from '@/schemas/product.schema'
 import ProductHelper from '@/shared/helpers/product.helper'
 import { useCartStore } from '@/shared/hooks/use-cart-store'
-import { uniqBy } from 'lodash'
 import {
 	ArrowUpRight,
 	Heart,
@@ -78,15 +77,6 @@ const ProductModal = ({ product }: ProductModalProps) => {
 	)
 
 	const isButtonDisabled = quantityCount > productStock - productCartQty
-
-	const sizes = uniqBy(
-		(product?.variation || []).flatMap((v) => v.size.map((s) => s)),
-		'id',
-	)
-	const colors = uniqBy(
-		(product?.variation || []).map((v) => v.color),
-		'id',
-	)
 
 	useEffect(() => {
 		const selectedVariant = product?.variation?.find(
@@ -157,41 +147,42 @@ const ProductModal = ({ product }: ProductModalProps) => {
 							</span>
 						</div>
 						<div className="flex flex-wrap items-center gap-[10px]">
-							{colors.map((color) => (
-								<React.Fragment key={color.id}>
-									<input
-										type="radio"
-										id={color.id as string}
-										className="!absolute -m-[1px] h-[1px] w-[1px] overflow-hidden border-none p-0"
-										style={{
-											clip: 'rect(0 0 0 0)',
-											wordWrap: 'normal',
-										}}
-										checked={color.id === selectedProductColor.id}
-										onChange={() => {
-											setSelectedProductColor(color)
-											setSelectedProductSize(sizes[0])
-											setProductStock(sizes[0].stock)
-											setQuantityCount(1)
-										}}
-									/>
-									<label
-										htmlFor={color.id as string}
-										className={cn(
-											'relative h-[36px] w-[36px] cursor-pointer !rounded-[60px] border border-transparent p-[5px] text-center font-[400] leading-[22.4px] transition-[all_0.3s_ease]',
-											color.id === selectedProductColor.id &&
-												'border-primary shadow-[0_0.4rem_0.4rem_rgba(0,0,0,0.102)]',
-										)}
-									>
-										<span
-											className="block h-full w-full rounded-full border border-[#8787871E]"
+							{product.variation &&
+								product.variation.sort().map((single) => (
+									<React.Fragment key={single.color.id}>
+										<input
+											type="radio"
+											id={single.color.id as string}
+											className="!absolute -m-[1px] h-[1px] w-[1px] overflow-hidden border-none p-0"
 											style={{
-												backgroundColor: color.code,
+												clip: 'rect(0 0 0 0)',
+												wordWrap: 'normal',
+											}}
+											checked={single.color.id === selectedProductColor.id}
+											onChange={() => {
+												setSelectedProductColor(single.color)
+												setSelectedProductSize(single.size[0])
+												setProductStock(single.size[0].stock)
+												setQuantityCount(1)
 											}}
 										/>
-									</label>
-								</React.Fragment>
-							))}
+										<label
+											htmlFor={single.color.id as string}
+											className={cn(
+												'relative h-[36px] w-[36px] cursor-pointer !rounded-[60px] border border-transparent p-[5px] text-center font-[400] leading-[22.4px] transition-[all_0.3s_ease]',
+												single.color.id === selectedProductColor.id &&
+													'border-primary shadow-[0_0.4rem_0.4rem_rgba(0,0,0,0.102)]',
+											)}
+										>
+											<span
+												className="block h-full w-full rounded-full border border-[#8787871E]"
+												style={{
+													backgroundColor: single.color.code,
+												}}
+											/>
+										</label>
+									</React.Fragment>
+								))}
 						</div>
 					</div>
 					{/* size picker */}
@@ -201,35 +192,40 @@ const ProductModal = ({ product }: ProductModalProps) => {
 							<span className="ms-3 font-bold">{selectedProductSize.name}</span>
 						</div>
 						<div className="flex flex-wrap items-center gap-[10px]">
-							{sizes.map((size) => (
-								<React.Fragment key={size.id}>
-									<input
-										type="radio"
-										id={size.id as string}
-										className="!absolute -m-[1px] h-[1px] w-[1px] overflow-hidden border-none p-0"
-										style={{
-											clip: 'rect(0 0 0 0)',
-											wordWrap: 'normal',
-										}}
-										checked={size.id === selectedProductSize.id}
-										onChange={() => {
-											setSelectedProductSize(size)
-											setProductStock(size.stock)
-											setQuantityCount(1)
-										}}
-									/>
-									<label
-										htmlFor={size.id as string}
-										className={cn(
-											'relative h-[38px] w-max min-w-[45px] cursor-pointer rounded-[3px] border border-[#8787871E] px-[15px] py-[7px] text-center font-[400] leading-[22.4px] transition-[all_0.3s_ease]',
-											size.id === selectedProductSize.id &&
-												'border-primary bg-primary text-white shadow-[0_0.4rem_0.4rem_rgba(0,0,0,0.102)]',
-										)}
-									>
-										{size.name}
-									</label>
-								</React.Fragment>
-							))}
+							{product.variation &&
+								product.variation.sort().map(
+									(single) =>
+										single.color.id === selectedProductColor.id &&
+										single.size.map((size) => (
+											<React.Fragment key={size.id}>
+												<input
+													type="radio"
+													id={size.id as string}
+													className="!absolute -m-[1px] h-[1px] w-[1px] overflow-hidden border-none p-0"
+													style={{
+														clip: 'rect(0 0 0 0)',
+														wordWrap: 'normal',
+													}}
+													checked={size.id === selectedProductSize.id}
+													onChange={() => {
+														setSelectedProductSize(size)
+														setProductStock(size.stock)
+														setQuantityCount(1)
+													}}
+												/>
+												<label
+													htmlFor={size.id as string}
+													className={cn(
+														'relative h-[38px] w-max min-w-[45px] cursor-pointer rounded-[3px] border border-[#8787871E] px-[15px] py-[7px] text-center font-[400] leading-[22.4px] transition-[all_0.3s_ease]',
+														size.id === selectedProductSize.id &&
+															'border-primary bg-primary text-white shadow-[0_0.4rem_0.4rem_rgba(0,0,0,0.102)]',
+													)}
+												>
+													{size.name}
+												</label>
+											</React.Fragment>
+										)),
+								)}
 						</div>
 					</div>
 					{/* quantity */}

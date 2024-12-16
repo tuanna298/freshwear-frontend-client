@@ -2,12 +2,13 @@ import { Product } from '@/schemas/product.schema'
 import ProductHelper from '@/shared/helpers/product.helper'
 import { HttpError, useList } from '@refinedev/core'
 import { ShoppingBag } from 'lucide-react'
+import { useEffect } from 'react'
 import { Button } from '../ui/button'
 import { Card, CardContent } from '../ui/card'
 import { PageSection, PageSectionHeader } from './page'
 
 const Gallery = () => {
-	const { data } = useList<Product, HttpError>({
+	const { data, refetch } = useList<Product, HttpError>({
 		resource: 'product',
 		pagination: {
 			pageSize: 12,
@@ -21,6 +22,10 @@ const Gallery = () => {
 	})
 
 	const products = data?.data ? ProductHelper.transform(data.data) : []
+
+	useEffect(() => {
+		refetch()
+	}, [])
 
 	return (
 		<PageSection>
