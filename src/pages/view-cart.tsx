@@ -79,14 +79,14 @@ const ViewCart = () => {
 										{/* product info */}
 										<td className="flex px-[10px] py-[18px] ps-0 text-start">
 											<Link
-												to={`product-detail/${item.id}`}
+												to={`product-detail/${item.cartItemId}`}
 												className="mr-[24px] inline-block max-h-[110px] w-[80px] cursor-pointer overflow-hidden rounded-[2.5px] text-primary no-underline transition-[all_0.3s_ease]"
 											>
 												<img
 													src={
 														item?.image || '/assets/img/other/placeholder.jpg'
 													}
-													alt={'img-product-' + item.id}
+													alt={'img-product-' + item.cartItemId}
 													className="h-auto max-w-full align-middle text-transparent"
 												/>
 											</Link>
@@ -94,7 +94,7 @@ const ViewCart = () => {
 											{/* cart info */}
 											<div>
 												<Link
-													to={`product-detail/${item.id}`}
+													to={`product-detail/${item.cartItemId}`}
 													className="cursor-pointer text-[14px] leading-[19.6px] text-primary transition-[all_0.3s_ease]"
 												>
 													{item.name}

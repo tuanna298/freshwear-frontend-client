@@ -1,27 +1,11 @@
 import { HeaderPlacholder } from '@/components/custom/header'
 import { Button } from '@/components/ui/button'
-import { useCartStore } from '@/shared/hooks/use-cart-store'
-import { CircleCheck } from 'lucide-react'
-import { Fragment, useEffect } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { CircleSlash } from 'lucide-react'
+import { Fragment } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const OrderSuccess = () => {
-	const { deleteAll } = useCartStore()
 	const navigate = useNavigate()
-	const location = useLocation()
-
-	useEffect(() => {
-		const timeoutId = setTimeout(() => {
-			const params = new URLSearchParams(location.search)
-			const shouldClearCart = params.get('shouldClearCart') === 'true'
-
-			if (shouldClearCart) {
-				deleteAll()
-			}
-		}, 100)
-
-		return () => clearTimeout(timeoutId)
-	}, [location.search, deleteAll])
 
 	return (
 		<Fragment>
@@ -36,7 +20,7 @@ const OrderSuccess = () => {
 			>
 				<div className="mx-auto my-0 w-full max-w-full pr-[40px] ps-[40px]">
 					<div className="text-center text-[42px] font-[400] leading-[50px]">
-						Thành công
+						Thất bại
 					</div>
 				</div>
 			</div>
@@ -44,12 +28,13 @@ const OrderSuccess = () => {
 			{/* content */}
 			<section className="container m-auto w-full pb-[70px] pt-[80px]">
 				<div className="text-center">
-					<CircleCheck size={96} className="mx-auto mb-3 text-green-500" />
+					<CircleSlash size={96} className="mx-auto mb-3 text-destructive" />
 					<h1 className="mb-[20px] text-[30px] font-[700]">
-						Cảm ơn bạn đã đặt hàng
+						Đặt hàng thất bại
 					</h1>
 					<p className="mb-[20px] text-[16px] text-[#666]">
-						Chúng tôi sẽ liên hệ với bạn sớm nhất có thể
+						Đã có lỗi xảy ra trong quá trình đặt hàng. Chúng tôi sẽ liên hệ với
+						bạn sớm nhất có thể.
 					</p>
 					<Button
 						className="h-full flex-grow rounded-[3px] px-[24px] py-[14px] text-center text-base font-semibold transition-[all_0.3s_ease]"

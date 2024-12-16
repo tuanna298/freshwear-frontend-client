@@ -67,7 +67,7 @@ const ShoppingCart = () => {
 										<div className="my-0 flex gap-[24px] px-0 py-[20px]">
 											{/* image */}
 											<Link
-												to={`product-detail/${item.id}`}
+												to={`product-detail/${item.cartItemId}`}
 												state={{ data: item }}
 												className="inline-block h-[110px] w-[80px] cursor-pointer text-primary no-underline transition-[all_0.3s_ease]"
 											>
@@ -80,7 +80,7 @@ const ShoppingCart = () => {
 
 											<div>
 												<Link
-													to={`product-detail/${item.id}`}
+													to={`product-detail/${item.cartItemId}`}
 													className="block cursor-pointer text-base text-primary no-underline transition-[all_0.3s_ease]"
 												>
 													{item.name}

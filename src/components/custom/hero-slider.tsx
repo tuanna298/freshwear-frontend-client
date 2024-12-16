@@ -101,7 +101,7 @@ const HeroSliderSingle = ({ data, sliderClass }: HeroSliderSingleProps) => {
 							<h1 className="animate__animated">{data.subtitle}</h1>
 							<p className="animate__animated">{data.text}</p>
 							<div className="slider-btn-5 btn-hover">
-								<Link className="animate__animated font-bold" to={data.url}>
+								<Link className="animate__animated font-bold" to={'/shop'}>
 									Mua ngay
 								</Link>
 							</div>

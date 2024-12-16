@@ -1,10 +1,12 @@
 import { cn } from '@/lib/utils'
+import { useAuthStore } from '@/shared/hooks/use-auth-store'
 import { Heart } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Button } from '../ui/button'
 import AccountNav from './account-nav'
 import { Navigation } from './navigation'
 import ShoppingCart from './shopping-cart'
+import { TextShine } from './text-shine'
 
 export const HeaderPlacholder = () => {
 	return (
@@ -19,6 +21,8 @@ export const HeaderPlacholder = () => {
 	)
 }
 export const Header = () => {
+	const { profile } = useAuthStore()
+
 	const [isScrolled, setIsScrolled] = useState(false)
 
 	useEffect(() => {
@@ -40,17 +44,26 @@ export const Header = () => {
 				isScrolled ? 'py-4' : 'py-6',
 			)}
 		>
-			<div className="col-span-3 flex justify-start">
-				<span
-					className={cn('font-montserrat text-2xl font-semibold uppercase')}
-				>
-					freshwear
-				</span>
+			<div className="col-span-3 flex items-center justify-start gap-4">
+				<TextShine
+					text={
+						profile ? (
+							<>
+								<span className="mr-5">FRESHWEAR</span>
+								<span className="text-xl">xin chào, {profile.full_name}</span>
+							</>
+						) : (
+							'FRESHWEAR'
+						)
+					}
+					shineColor="#FFD700"
+					duration={10}
+				/>
 			</div>
 			<div className="col-span-6 flex items-center justify-center">
 				<Navigation />
 			</div>
-			<div className="col-span-3 flex justify-end gap-4">
+			<div className="col-span-3 flex items-center justify-end gap-4">
 				<AccountNav />
 				<Button
 					size="icon"

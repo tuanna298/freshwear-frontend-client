@@ -8,6 +8,7 @@ import {
 	ErrorComponent,
 	Home,
 	MyAccount,
+	OrderFailed,
 	OrderSuccess,
 	ProductDetail,
 	Shop,
@@ -87,6 +88,14 @@ export default () => {
 						element={
 							<Suspense fallback={null}>
 								<OrderSuccess />
+							</Suspense>
+						}
+					/>
+					<Route
+						path="/order-failed"
+						element={
+							<Suspense fallback={null}>
+								<OrderFailed />
 							</Suspense>
 						}
 					/>

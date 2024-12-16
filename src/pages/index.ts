@@ -45,6 +45,11 @@ const OrderSuccess = lazy(async () => {
 	return import('./order-success')
 })
 
+const OrderFailed = lazy(async () => {
+	await new Promise((r) => setTimeout(r, 300))
+	return import('./order-failed')
+})
+
 const SignIn = lazy(async () => {
 	await new Promise((r) => setTimeout(r, 300))
 	return import('./sign-in')
@@ -66,6 +71,7 @@ export {
 	ErrorComponent,
 	Home,
 	MyAccount,
+	OrderFailed,
 	OrderSuccess,
 	ProductDetail,
 	Shop,

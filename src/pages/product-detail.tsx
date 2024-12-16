@@ -186,7 +186,7 @@ const ProductDetail = () => {
 				</div>
 
 				{/* product detail */}
-				<div className="mb-[100px] grid grid-cols-2">
+				<div className="mb-[100px] grid grid-cols-2 items-stretch">
 					<Carousel
 						orientation="vertical"
 						className="flex items-start gap-2 pr-[30px]"

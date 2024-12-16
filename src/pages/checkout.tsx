@@ -51,7 +51,15 @@ const Checkout = () => {
 				},
 			},
 			{
-				onSuccess() {
+				onSuccess(data, variables) {
+					if (
+						(variables?.values as Order)?.method === PaymentMethod.TRANSFER &&
+						typeof data.data === 'string'
+					) {
+						window.location.href = data.data
+						return
+					}
+
 					navigate('/order-success', {
 						preventScrollReset: false,
 					})
