@@ -71,13 +71,13 @@ export const orderSchema = z.object({
 	phone_number: z.string(),
 	email: z.string(),
 	receiver_name: z.string(),
-	total_money: z.number(),
+	total_money: z.number().optional().nullable(),
 	note: z.string().optional().nullable(),
 	method: z.nativeEnum(PaymentMethod).default(PaymentMethod.CASH),
 	status: z.nativeEnum(OrderStatus).default(OrderStatus.PENDING),
-	details: z.array(orderDetailSchema),
-	histories: z.array(orderHistorySchema),
-	payments: z.array(orderPaymentSchema),
+	details: z.array(orderDetailSchema).optional().nullable(),
+	histories: z.array(orderHistorySchema).optional().nullable(),
+	payments: z.array(orderPaymentSchema).optional().nullable(),
 	user: userSchema.optional().nullable(),
 })
 

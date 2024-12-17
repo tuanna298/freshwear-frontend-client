@@ -32,7 +32,11 @@ const Checkout = () => {
 			}
 		},
 	})
-	const { register, handleSubmit } = useForm<Order>({
+	const {
+		register,
+		handleSubmit,
+		formState: { errors },
+	} = useForm<Order>({
 		defaultValues: orderDefaultValues,
 		resolver: zodResolver(orderSchema),
 	})
@@ -68,6 +72,8 @@ const Checkout = () => {
 			},
 		)
 	}
+
+	console.log('errors', errors)
 
 	return (
 		<Fragment>
