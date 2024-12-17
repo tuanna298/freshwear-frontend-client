@@ -1,4 +1,9 @@
 import { Button } from '@/components/ui/button'
+import { AppToast } from '@/components/ui/toast'
+import {
+	getErrorDetailMessage,
+	getErrorSumaryMessage,
+} from '@/lib/tanstack.util'
 import { cn } from '@/lib/utils'
 import {
 	changePasswordDefaultValues,
@@ -7,13 +12,21 @@ import {
 	updateProfileDefaultValues,
 	UpdateProfileDto,
 	updateProfileSchema,
+	UserGender,
 } from '@/schemas/auth/user.schema'
 import authApi from '@/shared/apis/auth.api'
+import { AUTH_KEYS } from '@/shared/common/constants'
+import { useAuthStore } from '@/shared/hooks/use-auth-store'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useEffect } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 
+const { AUTH, PROFILE } = AUTH_KEYS
+
 const MyProfile = () => {
+	const queryClient = useQueryClient()
+	const { profile } = useAuthStore()
 	const {
 		register: updateProfileRegister,
 		handleSubmit: updateProfileHandleSubmit,
@@ -21,11 +34,21 @@ const MyProfile = () => {
 			errors: updateProfileErrors,
 			touchedFields: updateProfileTouchedFields,
 		},
+		setValue,
 	} = useForm<UpdateProfileDto>({
 		defaultValues: updateProfileDefaultValues,
 		resolver: zodResolver(updateProfileSchema),
 		mode: 'onChange',
 	})
+
+	useEffect(() => {
+		if (profile) {
+			setValue('full_name', profile.full_name, { shouldTouch: true })
+			setValue('phone_number', profile.phone_number, { shouldTouch: true })
+			setValue('address', profile.address, { shouldTouch: true })
+			setValue('gender', profile.gender, { shouldTouch: true })
+		}
+	}, [profile])
 
 	const {
 		register: changePasswordProfileRegister,
@@ -43,23 +66,46 @@ const MyProfile = () => {
 	const { mutate: updateProfile } = useMutation({
 		mutationKey: ['updateProfile'],
 		mutationFn: (dto: UpdateProfileDto) => authApi.updateProfile(dto),
+		onError: (error: any) => {
+			const message = getErrorSumaryMessage(error)
+			const detail = getErrorDetailMessage(error)
+			AppToast.error(message, {
+				description: detail,
+			})
+		},
 	})
 
 	const { mutate: changePassword } = useMutation({
 		mutationKey: ['changePassword'],
 		mutationFn: (dto: ChangePasswordDto) => authApi.changePassword(dto),
+		onError: (error: any) => {
+			const message = getErrorSumaryMessage(error)
+			const detail = getErrorDetailMessage(error)
+			AppToast.error(message, {
+				description: detail,
+			})
+		},
 	})
 
 	const onUpdateProfileSubmit: SubmitHandler<UpdateProfileDto> = (
 		data: UpdateProfileDto,
 	) => {
-		updateProfile(data)
+		updateProfile(data, {
+			onSuccess() {
+				AppToast.success('Cập nhật thông tin thành công')
+				queryClient.invalidateQueries([AUTH, PROFILE])
+			},
+		})
 	}
 
 	const onChangePasswordSubmit: SubmitHandler<ChangePasswordDto> = (
 		data: ChangePasswordDto,
 	) => {
-		changePassword(data)
+		changePassword(data, {
+			onSuccess() {
+				AppToast.success('Thay đổi mật khẩu thành công')
+			},
+		})
 	}
 
 	return (
@@ -154,6 +200,35 @@ const MyProfile = () => {
 					)}
 				</div>
 
+				<div className="space-y-2">
+					<div className="relative mb-[15px]">
+						<div className="flex items-center space-x-4">
+							<label className="flex items-center space-x-2">
+								<input
+									type="radio"
+									value={UserGender.MALE}
+									{...updateProfileRegister('gender')}
+								/>
+								<span>Nam</span>
+							</label>
+							<label className="flex items-center space-x-2">
+								<input
+									type="radio"
+									value={UserGender.FEMALE}
+									{...updateProfileRegister('gender')}
+								/>
+								<span>Nữ</span>
+							</label>
+						</div>
+					</div>
+
+					{updateProfileErrors.gender && (
+						<p className="text-[0.8rem] font-medium text-destructive">
+							{updateProfileErrors.gender.message}
+						</p>
+					)}
+				</div>
+
 				{/* submit */}
 				<div>
 					<Button className="w-full rounded-[3px] px-[24px] py-[14px]">
@@ -173,7 +248,7 @@ const MyProfile = () => {
 					<div className="relative mb-[15px]">
 						<input
 							id="current_password"
-							type="text"
+							type="password"
 							className="peer h-[50px] w-full rounded-[3px] border border-[#ebebeb] px-[18px] pb-[6px] pt-[25px] text-[14px] font-medium text-gray-600 transition-all duration-200 ease-in-out focus:outline-none"
 							placeholder=" "
 							{...changePasswordProfileRegister('current_password')}
@@ -201,7 +276,7 @@ const MyProfile = () => {
 					<div className="relative mb-[15px]">
 						<input
 							id="new_password"
-							type="text"
+							type="password"
 							className="peer h-[50px] w-full rounded-[3px] border border-[#ebebeb] px-[18px] pb-[6px] pt-[25px] text-[14px] font-medium text-gray-600 transition-all duration-200 ease-in-out focus:outline-none"
 							placeholder=" "
 							{...changePasswordProfileRegister('new_password')}
@@ -229,7 +304,7 @@ const MyProfile = () => {
 					<div className="relative mb-[15px]">
 						<input
 							id="confirm_password"
-							type="text"
+							type="password"
 							className="peer h-[50px] w-full rounded-[3px] border border-[#ebebeb] px-[18px] pb-[6px] pt-[25px] text-[14px] font-medium text-gray-600 transition-all duration-200 ease-in-out focus:outline-none"
 							placeholder=" "
 							{...changePasswordProfileRegister('confirm_password')}

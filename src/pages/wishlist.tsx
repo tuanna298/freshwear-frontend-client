@@ -1,43 +1,36 @@
 import { HeaderPlacholder } from '@/components/custom/header'
 import { ProductGridSingle } from '@/components/custom/product/product-grid'
-import { Fragment } from 'react'
+import { Button } from '@/components/ui/button'
+import { useWishlistStore } from '@/shared/hooks/use-wishlist-store'
+import { motion, Variants } from 'framer-motion'
+import { Trash } from 'lucide-react'
+import { Fragment, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useOnClickOutside } from 'usehooks-ts'
 
-const products = [
-	{
-		id: 1,
-		name: 'Classic T-Shirt',
-		price: 250,
-		image: 'https://picsum.photos/700/1000',
-		sizes: ['S', 'M', 'L', 'XL'],
-		colors: ['red', 'white', 'black'],
-	},
-	{
-		id: 2,
-		name: 'Running Shoes',
-		price: 1200,
-		image: 'https://picsum.photos/700/1000',
-		sizes: ['6', '7', '8', '9', '10'],
-		colors: ['blue', 'gray', 'black'],
-	},
-	{
-		id: 3,
-		name: 'Leather Jacket',
-		price: 3500,
-		image: 'https://picsum.photos/700/1000',
-		sizes: ['M', 'L', 'XL'],
-		colors: ['black', 'brown'],
-	},
-	{
-		id: 4,
-		name: 'Casual Cap',
-		price: 150,
-		image: 'https://picsum.photos/700/1000',
-		sizes: ['One Size'],
-		colors: ['green', 'white', 'black'],
-	},
-]
+const buttonVariants: Variants = {
+	hidden: { opacity: 0, y: 10 },
+	visible: (custom) => ({
+		opacity: 1,
+		y: 0,
+		transition: {
+			delay: custom * 0.2,
+			duration: 0.1,
+			ease: 'easeOut',
+		},
+	}),
+}
 
 const Wishlist = () => {
+	const [isHovered, setIsHovered] = useState(false)
+	const ref = useRef(null)
+	const navigate = useNavigate()
+	const { wishlistItems, deleteFromWishlist } = useWishlistStore()
+
+	useOnClickOutside(ref, () => {
+		setIsHovered(false)
+	})
+
 	return (
 		<Fragment>
 			<HeaderPlacholder />
@@ -57,9 +50,48 @@ const Wishlist = () => {
 			</div>
 
 			<section className="container m-auto w-full pb-[70px] pt-[45px] ">
+				{wishlistItems.length === 0 && (
+					<div className="text-center">
+						<div className="text-center text-[18px] font-[400] leading-[1.4]">
+							Danh sách yêu thích trống
+						</div>
+						<Button
+							className="mt-3 w-56 rounded-[3px]"
+							onClick={() => navigate('/shop')}
+						>
+							Mua sắm ngay
+						</Button>
+					</div>
+				)}
 				<div className="grid grid-cols-4 gap-[30px] gap-y-[80px]">
-					{products.map((product) => {
-						return <ProductGridSingle product={product} key={product.id} />
+					{wishlistItems.map((item) => {
+						return (
+							<div
+								className="relative"
+								onMouseEnter={() => setIsHovered(true)}
+								onMouseLeave={() => setIsHovered(false)}
+							>
+								<ProductGridSingle product={item.product} key={item.id} />
+
+								<motion.div
+									className={`absolute right-[15px] top-[15px] z-50 flex items-center justify-center gap-[6px] transition-all duration-300 ${
+										isHovered
+											? 'translate-y-0 opacity-100'
+											: 'translate-y-10 opacity-0'
+									}`}
+									initial="hidden"
+									animate={isHovered ? 'visible' : 'hidden'}
+									variants={buttonVariants}
+								>
+									<Button
+										className="aspect-square h-[42px] w-[42px] rounded-[3px] bg-background p-0 text-primary hover:text-background"
+										onClick={() => deleteFromWishlist(item.id)}
+									>
+										<Trash size={18} />
+									</Button>
+								</motion.div>
+							</div>
+						)
 					})}
 				</div>
 			</section>

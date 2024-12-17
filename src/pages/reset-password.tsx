@@ -1,43 +1,75 @@
 import { HeaderPlacholder } from '@/components/custom/header'
 import { Button } from '@/components/ui/button'
+import { AppToast } from '@/components/ui/toast'
+import {
+	getErrorDetailMessage,
+	getErrorSumaryMessage,
+} from '@/lib/tanstack.util'
 import { cn } from '@/lib/utils'
 import {
-	signUpDefaultValues,
-	SignUpDto,
-	signUpSchema,
+	resetPasswordDefaultValues,
+	ResetPasswordDto,
+	resetPasswordSchema,
 } from '@/schemas/auth/user.schema'
+import { API_URL } from '@/shared/common/constants'
+import http from '@/shared/configs/http.config'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useRegister } from '@refinedev/core'
+import { useMutation } from '@tanstack/react-query'
 import { omit } from 'lodash'
 import { ArrowUpRight } from 'lucide-react'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import { Link } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 
-export type RegisterVariables = {
-	email: string
-	username: string
-	password: string
-}
-
-const SignUp = () => {
+const ResetPassword = () => {
+	const navigate = useNavigate()
+	const location = useLocation()
 	const {
 		register,
 		handleSubmit,
 		formState: { errors, touchedFields },
-	} = useForm<SignUpDto>({
-		defaultValues: signUpDefaultValues,
-		resolver: zodResolver(signUpSchema),
+		setValue,
+		watch,
+	} = useForm<ResetPasswordDto>({
+		defaultValues: resetPasswordDefaultValues,
+		resolver: zodResolver(resetPasswordSchema),
 		mode: 'onChange',
 	})
 
-	const { mutate: signUp } = useRegister<RegisterVariables>()
+	const { mutate: reset } = useMutation({
+		mutationKey: ['reset-password'],
+		mutationFn: (dto: Omit<ResetPasswordDto, 'confirm_password'>) =>
+			http.post(API_URL + '/auth/forgot-password/reset', dto),
+		onSuccess: () => {
+			AppToast.success('Đặt lại mật khẩu thành công')
+			navigate('/sign-in')
+		},
+		onError: (error: any) => {
+			const message = getErrorSumaryMessage(error)
+			const detail = getErrorDetailMessage(error)
+			AppToast.error(message, {
+				description: detail,
+			})
+		},
+	})
 
-	const onSubmit: SubmitHandler<RegisterVariables> = (
-		data: RegisterVariables,
+	const onSubmit: SubmitHandler<ResetPasswordDto> = (
+		data: ResetPasswordDto,
 	) => {
-		signUp(omit(data, 'confirm_password'))
+		if (!watch('token')) {
+			AppToast.error('Token không hợp lệ')
+		}
+
+		reset(omit(data, 'confirm_password'))
 	}
+
+	useEffect(() => {
+		const params = new URLSearchParams(location.search)
+		const token = params.get('token')
+		if (token) {
+			setValue('token', token)
+		}
+	}, [location.search, setValue])
 
 	return (
 		<React.Fragment>
@@ -50,101 +82,46 @@ const SignUp = () => {
 			>
 				<div className="mx-auto my-0 w-full max-w-full px-[40px]">
 					<div className="text-center text-[42px] font-normal leading-[50px]">
-						Đăng ký
+						Đặt lại mật khẩu
 					</div>
 				</div>
 			</div>
 
-			<section className="container m-auto w-full py-[80px]">
+			<section className="container m-auto w-full py-[40px]">
 				<div className="mx-auto my-0 w-full max-w-[551px]">
 					{/* sign-up */}
 					<div>
-						<h5 className="mb-[15px] text-[28px] leading-[33.6px]">Đăng ký</h5>
-						<p className="mb-[36px] text-sm text-[#545454]">
-							Đăng ký để nhận được những ưu đãi và thông tin mới nhất từ chúng
-							tôi
-						</p>
 						<form
-							id="sign-in-form"
+							id="reset-password-form"
 							onSubmit={handleSubmit(onSubmit)}
 							className="space-y-3"
 						>
 							<div className="space-y-2">
 								<div className="relative mb-[15px]">
 									<input
-										id="email"
-										type="text"
-										className="peer h-[50px] w-full rounded-[3px] border border-[#ebebeb] px-[18px] pb-[6px] pt-[25px] text-[14px] font-medium text-gray-600 transition-all duration-200 ease-in-out focus:outline-none"
-										placeholder=" "
-										{...register('email')}
-									/>
-									<label
-										htmlFor="email"
-										className={cn(
-											'pointer-events-none absolute left-[18px] top-1/2 origin-left -translate-y-1/2 text-[14px] font-medium text-gray-500 transition-all duration-200 ease-in-out peer-placeholder-shown:top-1/2 peer-placeholder-shown:scale-100 peer-focus:top-[14px] peer-focus:scale-[0.8]',
-											touchedFields.email && 'top-[14px] scale-[0.8]',
-										)}
-									>
-										Email *
-									</label>
-								</div>
-								{errors.email && (
-									<p className="text-[0.8rem] font-medium text-destructive">
-										{errors.email.message}
-									</p>
-								)}
-							</div>
-							<div className="space-y-2">
-								<div className="relative mb-[15px]">
-									<input
-										id="username"
-										type="text"
-										className="peer h-[50px] w-full rounded-[3px] border border-[#ebebeb] px-[18px] pb-[6px] pt-[25px] text-[14px] font-medium text-gray-600 transition-all duration-200 ease-in-out focus:outline-none"
-										placeholder=" "
-										{...register('username')}
-									/>
-									<label
-										htmlFor="username"
-										className={cn(
-											'pointer-events-none absolute left-[18px] top-1/2 origin-left -translate-y-1/2 text-[14px] font-medium text-gray-500 transition-all duration-200 ease-in-out peer-placeholder-shown:top-1/2 peer-placeholder-shown:scale-100 peer-focus:top-[14px] peer-focus:scale-[0.8]',
-											touchedFields.username && 'top-[14px] scale-[0.8]',
-										)}
-									>
-										Tên đăng nhập *
-									</label>
-								</div>
-								{errors.username && (
-									<p className="text-[0.8rem] font-medium text-destructive">
-										{errors.username.message}
-									</p>
-								)}
-							</div>
-
-							<div className="space-y-2">
-								<div className="relative mb-[15px]">
-									<input
-										id="password"
+										id="new_password"
 										type="password"
 										className="peer h-[50px] w-full rounded-[3px] border border-[#ebebeb] px-[18px] pb-[6px] pt-[25px] text-[14px] font-medium text-gray-600 transition-all duration-200 ease-in-out focus:outline-none"
 										placeholder=" "
-										{...register('password')}
+										{...register('new_password')}
 									/>
 									<label
-										htmlFor="password"
+										htmlFor="new_password"
 										className={cn(
 											'pointer-events-none absolute left-[18px] top-1/2 origin-left -translate-y-1/2 text-[14px] font-medium text-gray-500 transition-all duration-200 ease-in-out peer-placeholder-shown:top-1/2 peer-placeholder-shown:scale-100 peer-focus:top-[14px] peer-focus:scale-[0.8]',
-											touchedFields.password && 'top-[14px] scale-[0.8]',
+											touchedFields.new_password && 'top-[14px] scale-[0.8]',
 										)}
 									>
 										Mật khẩu *
 									</label>
 								</div>
-								{errors.password && (
+								{errors.new_password && (
 									<p className="text-[0.8rem] font-medium text-destructive">
-										{errors.password.message}
+										{errors.new_password.message}
 									</p>
 								)}
 							</div>
+
 							<div className="mb-[30px] space-y-2">
 								<div className="relative">
 									<input
@@ -175,7 +152,7 @@ const SignUp = () => {
 							{/* submit */}
 							<div className="text-center">
 								<Button className="mb-[15px] w-full rounded-[3px] px-[24px] py-[14px]">
-									Đăng ký
+									Đặt lại mật khẩu
 								</Button>
 								<Link
 									to="/sign-in"
@@ -193,4 +170,4 @@ const SignUp = () => {
 	)
 }
 
-export default SignUp
+export default ResetPassword

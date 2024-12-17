@@ -138,3 +138,7 @@
 		padding-right: 40px;
 	}
 }
+
+img {
+	object-position: top;
+}

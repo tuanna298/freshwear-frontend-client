@@ -2,6 +2,11 @@ import Footer from '@/components/custom/footer'
 import { Header } from '@/components/custom/header'
 import ScrollToTop from '@/components/custom/scroll-to-top'
 import ScrollToTopButton from '@/components/custom/scroll-top-btn'
+import { AppToast } from '@/components/ui/toast'
+import {
+	getErrorDetailMessage,
+	getErrorSumaryMessage,
+} from '@/lib/tanstack.util'
 import { User } from '@/schemas/auth/user.schema'
 import { useGetIdentity } from '@refinedev/core'
 import { useMutation } from '@tanstack/react-query'
@@ -18,6 +23,13 @@ const AppLayout = () => {
 	const { mutate, isSuccess } = useMutation({
 		mutationKey: ['checkAuth'],
 		mutationFn: (token: string) => authApi.introspect(token),
+		onError: (error: any) => {
+			const message = getErrorSumaryMessage(error)
+			const detail = getErrorDetailMessage(error)
+			AppToast.error(message, {
+				description: detail,
+			})
+		},
 	})
 
 	const { data } = useGetIdentity<User>({

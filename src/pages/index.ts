@@ -50,6 +50,21 @@ const OrderFailed = lazy(async () => {
 	return import('./order-failed')
 })
 
+const Contact = lazy(async () => {
+	await new Promise((r) => setTimeout(r, 300))
+	return import('./contact')
+})
+
+const AboutUs = lazy(async () => {
+	await new Promise((r) => setTimeout(r, 300))
+	return import('./about-us')
+})
+
+const ResetPassword = lazy(async () => {
+	await new Promise((r) => setTimeout(r, 300))
+	return import('./reset-password')
+})
+
 const SignIn = lazy(async () => {
 	await new Promise((r) => setTimeout(r, 300))
 	return import('./sign-in')
@@ -66,14 +81,17 @@ const ErrorComponent = lazy(async () => {
 })
 
 export {
+	AboutUs,
 	Checkout,
 	Compare,
+	Contact,
 	ErrorComponent,
 	Home,
 	MyAccount,
 	OrderFailed,
 	OrderSuccess,
 	ProductDetail,
+	ResetPassword,
 	Shop,
 	SignIn,
 	SignUp,

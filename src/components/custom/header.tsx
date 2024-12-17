@@ -1,7 +1,9 @@
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/shared/hooks/use-auth-store'
+import { useWishlistStore } from '@/shared/hooks/use-wishlist-store'
 import { Heart } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Button } from '../ui/button'
 import AccountNav from './account-nav'
 import { Navigation } from './navigation'
@@ -21,7 +23,9 @@ export const HeaderPlacholder = () => {
 	)
 }
 export const Header = () => {
+	const navigate = useNavigate()
 	const { profile } = useAuthStore()
+	const { wishlistItems } = useWishlistStore()
 
 	const [isScrolled, setIsScrolled] = useState(false)
 
@@ -51,7 +55,7 @@ export const Header = () => {
 							<>
 								<span className="mr-5">FRESHWEAR</span>
 								<span className="text-base 2xl:text-xl">
-									xin chào, {profile.full_name}
+									xin chào, {profile.full_name.split(' ').pop()}
 								</span>
 							</>
 						) : (
@@ -71,11 +75,12 @@ export const Header = () => {
 					size="icon"
 					variant="ghost"
 					className="rounded-full border-transparent bg-transparent"
+					onClick={() => navigate('/wishlist')}
 				>
 					<div className="relative">
 						<Heart size={18} />
 						<div className="absolute -right-2 -top-2 rounded-full bg-destructive px-[5px] py-[1px] text-xs font-bold text-white">
-							4
+							{wishlistItems.length}
 						</div>
 					</div>
 				</Button>

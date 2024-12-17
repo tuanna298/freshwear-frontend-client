@@ -2,15 +2,19 @@ import { Suspense } from 'react'
 import { Route, Routes, useLocation } from 'react-router-dom'
 import MyAccountOverview from './components/custom/my-account/my-account-overview'
 import MyOrders from './components/custom/my-account/my-orders'
+import MyOrdersDetail from './components/custom/my-account/my-orders-detail'
 import MyProfile from './components/custom/my-account/my-profile'
 import {
+	AboutUs,
 	Checkout,
+	Contact,
 	ErrorComponent,
 	Home,
 	MyAccount,
 	OrderFailed,
 	OrderSuccess,
 	ProductDetail,
+	ResetPassword,
 	Shop,
 	SignIn,
 	SignUp,
@@ -99,6 +103,22 @@ export default () => {
 							</Suspense>
 						}
 					/>
+					<Route
+						path="/contact"
+						element={
+							<Suspense fallback={null}>
+								<Contact />
+							</Suspense>
+						}
+					/>
+					<Route
+						path="/about-us"
+						element={
+							<Suspense fallback={null}>
+								<AboutUs />
+							</Suspense>
+						}
+					/>
 
 					<Route
 						path="/sign-in"
@@ -113,6 +133,14 @@ export default () => {
 						element={
 							<Suspense fallback={null}>
 								<SignUp />
+							</Suspense>
+						}
+					/>
+					<Route
+						path="/reset-password"
+						element={
+							<Suspense fallback={null}>
+								<ResetPassword />
 							</Suspense>
 						}
 					/>
@@ -140,6 +168,14 @@ export default () => {
 							element={
 								<Suspense fallback={null}>
 									<MyOrders />
+								</Suspense>
+							}
+						/>
+						<Route
+							path="/my-account/orders/:id?"
+							element={
+								<Suspense fallback={null}>
+									<MyOrdersDetail />
 								</Suspense>
 							}
 						/>

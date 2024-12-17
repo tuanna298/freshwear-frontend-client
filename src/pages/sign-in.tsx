@@ -229,7 +229,7 @@ const SignIn = () => {
 										</div>
 
 										<div className="space-y-2">
-											<div className="relative mb-[30px]">
+											<div className="relative">
 												<input
 													id="password"
 													type="password"

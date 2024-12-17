@@ -1,10 +1,11 @@
 import { cn } from '@/lib/utils'
 import { Product, ProductClient } from '@/schemas/product.schema'
 import ProductHelper from '@/shared/helpers/product.helper'
+import { useWishlistStore } from '@/shared/hooks/use-wishlist-store'
 import { HttpError, useList } from '@refinedev/core'
 import { motion, Variants } from 'framer-motion'
 import { uniqBy } from 'lodash'
-import { Heart } from 'lucide-react'
+import { Heart, Trash } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useOnClickOutside } from 'usehooks-ts'
 import { Button } from '../../ui/button'
@@ -63,6 +64,8 @@ const buttonVariants: Variants = {
 }
 
 export const ProductGridSingle = ({ product }: ProductGridSingleProps) => {
+	const { addToWishlist, wishlistItems, deleteFromWishlist } =
+		useWishlistStore()
 	const ref = useRef(null)
 	const { id, name, image, price, variation } = product
 
@@ -147,12 +150,24 @@ export const ProductGridSingle = ({ product }: ProductGridSingleProps) => {
 						<ProductModal product={product} key={product.id} />
 					</motion.div>
 					<motion.div custom={1} variants={buttonVariants}>
-						<Button className="aspect-square h-[42px] w-[42px] rounded-[3px] bg-background p-0 text-primary hover:text-background">
-							<Heart size={18} />
-						</Button>
+						{wishlistItems.findIndex((item) => item.id === id) > -1 ? (
+							<Button
+								className="aspect-square h-[42px] w-[42px] rounded-[3px] bg-background p-0 text-primary hover:text-background"
+								onClick={() => deleteFromWishlist(id)}
+							>
+								<Trash size={18} />
+							</Button>
+						) : (
+							<Button
+								className="aspect-square h-[42px] w-[42px] rounded-[3px] bg-background p-0 text-primary hover:text-background"
+								onClick={() => addToWishlist({ id, product })}
+							>
+								<Heart size={18} />
+							</Button>
+						)}
 					</motion.div>
 					<motion.div custom={2} variants={buttonVariants}>
-						<ProductCompare />
+						<ProductCompare product={product} />
 					</motion.div>
 				</motion.div>
 				{/* sizes list */}

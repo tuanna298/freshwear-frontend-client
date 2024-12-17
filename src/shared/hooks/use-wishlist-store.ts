@@ -1,10 +1,11 @@
 import { AppToast } from '@/components/ui/toast'
+import { ProductClient } from '@/schemas/product.schema'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 export interface WishlistItem {
 	id: string
-	// Add other properties as needed
+	product: ProductClient
 }
 
 export type WishlistState = {

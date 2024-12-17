@@ -7,6 +7,7 @@ export type CompareState = {
 	compareItems: ProductClient[]
 	addToCompare: (item: ProductClient) => void
 	deleteFromCompare: (id: string) => void
+	deleteAll: () => void
 }
 
 export const useCompareStore = create<CompareState>()(
@@ -26,6 +27,13 @@ export const useCompareStore = create<CompareState>()(
 					compareItems: state.compareItems.filter((item) => item.id !== id),
 				}))
 				AppToast.error('Đã xóa khỏi danh sách so sánh')
+			},
+
+			deleteAll: () => {
+				set(() => ({
+					compareItems: [],
+				}))
+				AppToast.error('Đã xóa tất cả khỏi danh sách so sánh')
 			},
 		}),
 		{ name: 'compare-store' }, // LocalStorage key

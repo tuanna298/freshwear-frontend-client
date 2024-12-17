@@ -46,12 +46,25 @@ export function Navigation() {
 						className={cn(
 							navigationMenuTriggerStyle(),
 							'relative !bg-transparent p-0 font-montserrat after:absolute after:bottom-1 after:h-[1px] after:w-full after:origin-bottom-right after:scale-x-0 after:bg-primary after:transition-transform after:duration-300 after:ease-in-out hover:bg-transparent hover:after:origin-bottom-left hover:after:scale-x-100',
-							currentPath === '/lien-he' &&
+							currentPath === '/contact' &&
 								'text-red-700 after:scale-x-100 after:bg-red-700 hover:text-red-700',
 						)}
-						href="/lien-he"
+						href="/contact"
 					>
 						Liên hệ
+					</NavigationMenuLink>
+				</NavigationMenuItem>
+				<NavigationMenuItem>
+					<NavigationMenuLink
+						className={cn(
+							navigationMenuTriggerStyle(),
+							'relative !bg-transparent p-0 font-montserrat after:absolute after:bottom-1 after:h-[1px] after:w-full after:origin-bottom-right after:scale-x-0 after:bg-primary after:transition-transform after:duration-300 after:ease-in-out hover:bg-transparent hover:after:origin-bottom-left hover:after:scale-x-100',
+							currentPath === '/about-us' &&
+								'text-red-700 after:scale-x-100 after:bg-red-700 hover:text-red-700',
+						)}
+						href="/about-us"
+					>
+						Về chúng tôi
 					</NavigationMenuLink>
 				</NavigationMenuItem>
 			</NavigationMenuList>

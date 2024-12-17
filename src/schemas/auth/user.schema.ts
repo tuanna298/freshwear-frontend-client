@@ -3,8 +3,8 @@ import { BaseDTO } from '@/shared/common/interfaces'
 import { z } from 'zod'
 
 export enum UserGender {
-	MALE,
-	FEMALE,
+	MALE = 'MALE',
+	FEMALE = 'FEMALE',
 }
 
 export const userSchema = z.object({
@@ -72,15 +72,25 @@ export const forgotPasswordSchema = userSchema.pick({
 	email: true,
 })
 
-export const resetPasswordSchema = z.object({
-	new_password: z
-		.string({
-			required_error: 'Vui lòng nhập mật khẩu',
-		})
-		.min(1, 'Vui lòng nhập mật khẩu')
-		.optional(),
-	token: z.string().optional().nullable(),
-})
+export const resetPasswordSchema = z
+	.object({
+		new_password: z
+			.string({
+				required_error: 'Vui lòng nhập mật khẩu',
+			})
+			.min(1, 'Vui lòng nhập mật khẩu')
+			.optional(),
+		token: z.string().optional().nullable(),
+		confirm_password: z
+			.string({
+				required_error: 'Vui lòng xác nhận mật khẩu',
+			})
+			.min(1, 'Vui lòng xác nhận mật khẩu'),
+	})
+	.refine((data) => data.new_password === data.confirm_password, {
+		message: 'Mật khẩu xác nhận không khớp',
+		path: ['confirm_password'],
+	})
 
 export const updateProfileSchema = userSchema.pick({
 	full_name: true,
@@ -117,8 +127,9 @@ export const signInDefaultValues = ZodUtil.getDefaults(signInSchema)
 export const signUpDefaultValues = ZodUtil.getDefaults(signUpSchema._def.schema)
 export const forgotPasswordDefaultValues =
 	ZodUtil.getDefaults(forgotPasswordSchema)
-export const resetPasswordDefaultValues =
-	ZodUtil.getDefaults(resetPasswordSchema)
+export const resetPasswordDefaultValues = ZodUtil.getDefaults(
+	resetPasswordSchema._def.schema,
+)
 export const userDefaultValues = ZodUtil.getDefaults(userSchema)
 export const updateProfileDefaultValues =
 	ZodUtil.getDefaults(updateProfileSchema)
