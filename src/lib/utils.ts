@@ -1,4 +1,5 @@
 import { APP_NAME } from '@/shared/common/constants'
+import { RuleObject } from 'antd/es/form'
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
@@ -108,4 +109,20 @@ export function composeEventHandlers<E>(
 			return ourEventHandler?.(event)
 		}
 	}
+}
+
+export const validateCommon = (
+	_: RuleObject,
+	value: string,
+	fieldName: string,
+): Promise<void> => {
+	if (
+		value === null ||
+		value === undefined ||
+		(typeof value === 'string' && value.trim() === '')
+	) {
+		return Promise.reject(`${fieldName} is required!`)
+	}
+
+	return Promise.resolve()
 }

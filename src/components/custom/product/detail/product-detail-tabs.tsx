@@ -1,8 +1,11 @@
 import { cn } from '@/lib/utils'
 import { ProductClient } from '@/schemas/product.schema'
+import { useIsAuthenticated, useList } from '@refinedev/core'
+import { Rate } from 'antd'
+import dayjs from 'dayjs'
 import { CircleSlash2, Dam, Flame, WashingMachine } from 'lucide-react'
 import { useState } from 'react'
-
+import YourReview from './sub/your-review'
 interface Props {
 	product: ProductClient
 }
@@ -139,16 +142,92 @@ const DescriptionContent = ({ product }: Props) => (
 )
 
 // Review Tab Content
-const ReviewContent = ({ product }: Props) => (
-	<div>
-		<h3 className="mb-[22px] !text-[16px] !font-bold leading-[19px]">
-			Đánh giá sản phẩm
-		</h3>
-		<p className="text-sm text-[#909090]">
-			Hiện tại chưa có đánh giá nào cho sản phẩm này.
-		</p>
-	</div>
-)
+const ReviewContent = ({ product }: Props) => {
+	const { data: dataAuth } = useIsAuthenticated()
+
+	const authenticated = dataAuth?.authenticated ?? false
+
+	const { data } = useList({
+		resource: 'review',
+		pagination: { pageSize: 100 },
+		filters: [
+			{
+				field: 'where',
+				operator: 'eq',
+				value: JSON.stringify({ product_id: product.id }),
+			},
+			{
+				field: 'include',
+				operator: 'eq',
+				value: JSON.stringify({
+					user: true,
+				}),
+			},
+		],
+	})
+
+	const reviews = data?.data
+
+	return (
+		<div>
+			<div>
+				{authenticated ? (
+					<YourReview product={product} />
+				) : (
+					<div>
+						<p className="text-sm text-[#909090]">
+							Vui lòng đăng nhập để thêm đánh giá
+						</p>
+					</div>
+				)}
+			</div>
+			<h3 className="my-[22px] !text-[16px] !font-bold leading-[19px]">
+				Đánh giá sản phẩm
+			</h3>
+
+			{reviews && reviews.length > 0 ? (
+				<div className="space-y-4">
+					{reviews.map((review, index) => (
+						<div key={index} className="border-b pb-4 last:border-b-0">
+							<div className="mb-2 flex items-center space-x-4">
+								{/* User Avatar Placeholder */}
+								<div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 uppercase">
+									{review.user?.full_name?.[0] || '?'}
+								</div>
+
+								<div className="flex-1">
+									<div className="flex items-center justify-between">
+										<h4 className="text-sm font-semibold">
+											{review.user?.full_name || 'Ẩn danh'}
+										</h4>
+										<span className="text-xs text-gray-500">
+											{/* Placeholder for formatted date */}
+											{dayjs(review.created_at).fromNow()}
+										</span>
+									</div>
+
+									{/* Star Rating */}
+									<div className="mt-1 flex items-center">
+										<Rate value={review.rating} />
+									</div>
+								</div>
+							</div>
+
+							{/* Review Text */}
+							<p className="mt-2 text-sm text-gray-700">
+								{review.comment || 'Không có bình luận'}
+							</p>
+						</div>
+					))}
+				</div>
+			) : (
+				<p className="text-sm text-[#909090]">
+					Hiện tại chưa có đánh giá nào cho sản phẩm này.
+				</p>
+			)}
+		</div>
+	)
+}
 
 // Shipping Tab Content
 const ShippingContent = ({ product }: Props) => (

@@ -55,6 +55,9 @@ const ProductDetail = () => {
 	const { data: dataOne } = useOne<Product, HttpError>({
 		resource: 'product',
 		id,
+		queryOptions: {
+			queryKey: ['product', id],
+		},
 	})
 
 	const { data } = useList<Product, HttpError>({
@@ -235,7 +238,7 @@ const ProductDetail = () => {
 						/>
 						{/* rating */}
 						<StarRating
-							value={4}
+							value={product.average_rating}
 							iconProps={{ className: 'fill-yellow-500 stroke-yellow-500' }}
 						/>
 						{/* description  */}

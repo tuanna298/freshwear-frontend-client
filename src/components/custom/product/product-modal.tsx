@@ -134,7 +134,7 @@ const ProductModal = ({ product }: ProductModalProps) => {
 						className="text-3xl text-destructive"
 					/>
 					{/* rating */}
-					<StarRating value={4} />
+					<StarRating value={product.average_rating} />
 					{/* description  */}
 					<p>{product?.description}</p>
 					<Separator className="my-5" />

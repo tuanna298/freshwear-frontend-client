@@ -68,6 +68,16 @@ const mapProductResponseToClient = (product: Product): ProductClient => {
 		maxPrice = 0
 	}
 
+	const reviews = product.reviews
+	let average_rating = 0
+	if (reviews && reviews.length > 0) {
+		const totalRating: number = reviews.reduce(
+			(sum: number, review: { rating: number }) => sum + review.rating,
+			0,
+		)
+		average_rating = totalRating / reviews.length
+	}
+
 	return {
 		id: product?.id!,
 		code: product?.code,
@@ -77,7 +87,7 @@ const mapProductResponseToClient = (product: Product): ProductClient => {
 			max: maxPrice,
 		},
 		sale_count: product.sale_count,
-		average_rating: product.average_rating,
+		average_rating,
 		new: isNew,
 		variation: variations,
 		image: images,
@@ -90,7 +100,6 @@ export default class ProductHelper {
 		return products.map(mapProductResponseToClient).map((product) => {
 			if (!product) return {} as ProductClient
 			;(product?.image ?? []).sort()
-
 			;(product?.variation || []).sort((a, b) =>
 				a.color.name.localeCompare(b.color.name),
 			)

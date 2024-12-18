@@ -3,7 +3,6 @@ import Gallery from '@/components/custom/gallery'
 import HeroSlider from '@/components/custom/hero-slider'
 import Lookbook from '@/components/custom/lookbook'
 import { ProductGrid } from '@/components/custom/product/product-grid'
-import Testimonial from '@/components/custom/testimonial'
 import { Fragment } from 'react'
 
 const Home = () => {
@@ -13,7 +12,7 @@ const Home = () => {
 			<ProductGrid />
 			{/* Marquee */}
 			<Lookbook />
-			<Testimonial />
+			{/* <Testimonial /> */}
 			<Gallery />
 			<Feature />
 		</Fragment>

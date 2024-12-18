@@ -67,7 +67,7 @@ const MyOrders = () => {
 									}
 								</td>
 								<td className="px-[20px] py-[15px] text-center text-sm">
-									<NumberField value={order.total_money} />
+									<NumberField value={order?.total_money || 0} />
 								</td>
 								<td className="px-[20px] py-[15px] text-center text-sm">
 									<Button
