@@ -1,5 +1,6 @@
 import { generateFilter, generateSort } from '@/lib/refine.util'
 import { API_URL } from '@/shared/common/constants'
+import http from '@/shared/configs/http.config'
 import {
 	CreateManyParams,
 	CreateManyResponse,
@@ -23,8 +24,6 @@ import { stringify } from '@refinedev/simple-rest'
 
 type MethodTypes = 'get' | 'delete' | 'head' | 'options'
 type MethodTypesWithBody = 'post' | 'put' | 'patch'
-
-const httpConfig = await import('@/shared/configs/http.config')
 
 export default {
 	getList: async <TData>({
@@ -60,7 +59,7 @@ export default {
 			query.orderBy = JSON.stringify(generatedSort)
 		}
 
-		const response = await httpConfig.default[requestMethod](
+		const response = await http[requestMethod](
 			`${url}?${stringify(query)}&${stringify(queryFilters)}`,
 			{
 				headers: headersFromMeta,
@@ -91,7 +90,7 @@ export default {
 		const { headers, method } = meta ?? {}
 		const requestMethod = (method as MethodTypes) ?? 'get'
 
-		const { data } = await httpConfig.default[requestMethod](
+		const { data } = await http[requestMethod](
 			`${API_URL}/${resource}?${stringify({ id: ids })}`,
 			{ headers },
 		)
@@ -111,7 +110,7 @@ export default {
 		const { headers, method } = meta ?? {}
 		const requestMethod = (method as MethodTypesWithBody) ?? 'post'
 
-		const response = await httpConfig.default[requestMethod](url, variables, {
+		const response = await http[requestMethod](url, variables, {
 			headers,
 		})
 
@@ -132,7 +131,7 @@ export default {
 		const { headers, method } = meta ?? {}
 		const requestMethod = (method as MethodTypesWithBody) ?? 'post'
 
-		const response = await httpConfig.default[requestMethod](url, variables, {
+		const response = await http[requestMethod](url, variables, {
 			headers,
 		})
 
@@ -155,7 +154,7 @@ export default {
 		const { headers, method } = meta ?? {}
 		const requestMethod = (method as MethodTypesWithBody) ?? 'put'
 
-		const { data } = await httpConfig.default[requestMethod](url, variables, {
+		const { data } = await http[requestMethod](url, variables, {
 			headers,
 		})
 
@@ -175,7 +174,7 @@ export default {
 
 		const requestMethod = (method as MethodTypes) ?? 'get'
 
-		const response = await httpConfig.default[requestMethod](url, { headers })
+		const response = await http[requestMethod](url, { headers })
 
 		const content = response.data
 
@@ -197,7 +196,7 @@ export default {
 		const { headers, method } = meta ?? {}
 		const requestMethod = (method as MethodTypesWithBody) ?? 'delete'
 
-		const response = await httpConfig.default[requestMethod](url, {
+		const response = await http[requestMethod](url, {
 			data: variables,
 			headers,
 		})
@@ -243,18 +242,18 @@ export default {
 			case 'put':
 			case 'post':
 			case 'patch':
-				axiosResponse = await httpConfig.default[method](url, payload, {
+				axiosResponse = await http[method](url, payload, {
 					headers,
 				})
 				break
 			case 'delete':
-				axiosResponse = await httpConfig.default.delete(url, {
+				axiosResponse = await http.delete(url, {
 					data: payload,
 					headers: headers,
 				})
 				break
 			default:
-				axiosResponse = await httpConfig.default.get(requestUrl, {
+				axiosResponse = await http.get(requestUrl, {
 					headers,
 				})
 				break

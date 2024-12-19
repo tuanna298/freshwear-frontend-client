@@ -1,12 +1,11 @@
 import { AppToast } from '@/components/ui/toast'
 import { handleError } from '@/lib/axios.util'
+import authApi from '@/shared/apis/auth.api'
 import { ROUTE_PATHS } from '@/shared/common/constants'
 import { useAuthStore } from '@/shared/hooks/use-auth-store'
 import { AuthProvider } from '@refinedev/core'
 
 const { ROOT, SIGN_IN } = ROUTE_PATHS
-
-const authApi = await import('@/shared/apis/auth.api')
 
 export default {
 	login: async ({ username, password }) => {
@@ -14,7 +13,7 @@ export default {
 		try {
 			const {
 				data: { access_token, refresh_token },
-			} = await authApi.default.signIn({
+			} = await authApi.signIn({
 				username,
 				password,
 			})
@@ -44,7 +43,7 @@ export default {
 	},
 	register: async ({ email, username, password }) => {
 		try {
-			const { data } = await authApi.default.signUp({
+			const { data } = await authApi.signUp({
 				email,
 				username,
 				password,
@@ -71,7 +70,7 @@ export default {
 	logout: async () => {
 		const { accessToken, clear } = useAuthStore.getState()
 		try {
-			authApi.default.signOut({
+			authApi.signOut({
 				headers: {
 					Authorization: `Bearer ${accessToken}`,
 				},
@@ -92,7 +91,7 @@ export default {
 
 		if (accessToken) {
 			try {
-				authApi.default.signOut({
+				authApi.signOut({
 					headers: {
 						Authorization: `Bearer ${accessToken}`,
 					},
@@ -122,7 +121,7 @@ export default {
 	},
 	forgotPassword: async ({ email }) => {
 		try {
-			await authApi.default.requestForgotPassword(email)
+			await authApi.requestForgotPassword(email)
 
 			AppToast.success(
 				'Gửi yêu cầu thành công!, chúng tôi sẽ gửi email hướng dẫn đặt lại mật khẩu cho bạn',
@@ -149,7 +148,7 @@ export default {
 		if (!accessToken) return null
 
 		try {
-			return (await authApi.default.getProfile()).data
+			return (await authApi.getProfile()).data
 		} catch (error) {
 			console.error('Error fetching user identity', error)
 			return null

@@ -12,6 +12,7 @@ import {
 	BaseResponse,
 	RefreshBody,
 } from '@/shared/common/interfaces'
+import http from '@/shared/configs/http.config'
 import { AxiosRequestConfig } from 'axios'
 
 const {
@@ -27,8 +28,6 @@ const {
 		ME: { BASE: ME, UPDATE_PROFILE, CHANGE_PASSWORD },
 	},
 } = API_PATHS
-
-const httpConfig = await import('@/shared/configs/http.config')
 class AuthApi {
 	constructor(public path: string) {}
 
@@ -37,34 +36,33 @@ class AuthApi {
 	}
 
 	signIn = async (dto: SignInDto): Promise<BaseResponse<AuthTokens>> =>
-		httpConfig.default.post(this.buildUrl(SIGN_IN), dto)
+		http.post(this.buildUrl(SIGN_IN), dto)
 
 	signUp = async (
 		dto: Omit<SignUpDto, 'confirm_password'>,
-	): Promise<BaseResponse<void>> =>
-		httpConfig.default.post(this.buildUrl(SIGN_UP), dto)
+	): Promise<BaseResponse<void>> => http.post(this.buildUrl(SIGN_UP), dto)
 
 	signOut = async (configs?: AxiosRequestConfig): Promise<void> =>
-		httpConfig.default.post(this.buildUrl(SIGN_OUT), undefined, configs)
+		http.post(this.buildUrl(SIGN_OUT), undefined, configs)
 
 	getProfile = async (): Promise<BaseResponse<User>> =>
-		httpConfig.default.get(this.buildUrl(ME))
+		http.get(this.buildUrl(ME))
 
 	updateProfile = async (dto: UpdateProfileDto): Promise<BaseResponse<void>> =>
-		httpConfig.default.put(this.buildUrl(UPDATE_PROFILE), dto)
+		http.put(this.buildUrl(UPDATE_PROFILE), dto)
 
 	changePassword = async (
 		dto: ChangePasswordDto,
 	): Promise<BaseResponse<void>> =>
-		httpConfig.default.post(this.buildUrl(CHANGE_PASSWORD), dto)
+		http.post(this.buildUrl(CHANGE_PASSWORD), dto)
 
 	requestForgotPassword = async (email: string): Promise<BaseResponse<void>> =>
-		httpConfig.default.post(this.buildUrl(FORGOT_PASSWORD_REQUEST), { email })
+		http.post(this.buildUrl(FORGOT_PASSWORD_REQUEST), { email })
 
 	resetForgotPassword = async (
 		dto: ResetPasswordDto,
 	): Promise<BaseResponse<void>> =>
-		httpConfig.default.post(this.buildUrl(FORGOT_PASSWORD_RESET), dto)
+		http.post(this.buildUrl(FORGOT_PASSWORD_RESET), dto)
 
 	refresh = async (
 		dto: RefreshBody,
@@ -75,7 +73,7 @@ class AuthApi {
 		)
 
 	introspect = async (token: string): Promise<BaseResponse<void>> =>
-		httpConfig.default.post(this.buildUrl(INTROSPECT), { token })
+		http.post(this.buildUrl(INTROSPECT), { token })
 }
 
 export default new AuthApi(BASE)

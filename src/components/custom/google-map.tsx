@@ -12,7 +12,7 @@ type MarkerProps = {
 	text: string
 }
 
-const Marker: React.FC<MarkerProps> = ({ lat, lng, text }) => (
+const Marker: React.FC<MarkerProps> = ({ text }) => (
 	<div className="map-marker">
 		<img src={'/assets/img/icon/2.png'} alt={text} />
 	</div>
@@ -22,7 +22,6 @@ const GoogleMap: React.FC<GoogleMappropTypes> = ({
 	lat = -3.745,
 	lng = -38.523,
 	zoom = 12,
-	options,
 }) => {
 	return (
 		<div style={{ height: '100vh', width: '100vw' }}>

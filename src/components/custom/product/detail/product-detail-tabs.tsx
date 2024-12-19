@@ -230,7 +230,7 @@ const ReviewContent = ({ product }: Props) => {
 }
 
 // Shipping Tab Content
-const ShippingContent = ({ product }: Props) => (
+const ShippingContent = ({}: Props) => (
 	<div>
 		<h3 className="mb-[22px] !text-[16px] !font-bold leading-[19px]">
 			Thông tin vận chuyển
@@ -243,7 +243,7 @@ const ShippingContent = ({ product }: Props) => (
 )
 
 // Policy Tab Content
-const PolicyContent = ({ product }: Props) => (
+const PolicyContent = ({}: Props) => (
 	<div>
 		<h3 className="mb-[22px] !text-[16px] !font-bold leading-[19px]">
 			Chính sách đổi trả
