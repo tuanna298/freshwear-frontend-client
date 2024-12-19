@@ -1,21 +1,29 @@
+import { HeaderPlacholder } from '@/components/custom/header'
+import OrdersDetailTabs from '@/components/custom/my-account/sub/orders-detail-tabs'
+import OrderStatusBadge from '@/components/custom/order/order-status-badge'
 import { Order, OrderStatus, PaymentMethod } from '@/schemas/order.schema'
-import { HttpError, useOne } from '@refinedev/core'
+import { useList } from '@refinedev/core'
 import dayjs from 'dayjs'
+import { Fragment } from 'react'
 import { useParams } from 'react-router-dom'
-import OrderStatusBadge from '../order/order-status-badge'
-import OrdersDetailTabs from './sub/orders-detail-tabs'
 
-const MyOrdersDetail = () => {
-	const { id } = useParams<{ id: string }>()
-	const { data: dataOne } = useOne<Order, HttpError>({
+const OrderDetails = () => {
+	const { code } = useParams<{ code: string }>()
+	const { data } = useList<Order>({
 		resource: 'order',
-		id,
+		filters: [
+			{
+				field: 'where',
+				operator: 'eq',
+				value: JSON.stringify({ code }),
+			},
+		],
 		queryOptions: {
-			enabled: !!id,
+			enabled: !!code,
 		},
 	})
 
-	const order = dataOne?.data
+	const order = data?.data?.[0]
 
 	return (
 		<div className="border p-[30px]">
@@ -76,9 +84,36 @@ const MyOrdersDetail = () => {
 				</div>
 			</div>
 
-			<OrdersDetailTabs order={order} />
+			{order && <OrdersDetailTabs order={order} />}
 		</div>
 	)
 }
 
-export default MyOrdersDetail
+const TrackingOrder = () => {
+	return (
+		<Fragment>
+			<HeaderPlacholder />
+			<div
+				className="pb-[65px] pr-0 ps-0 pt-[69px]"
+				style={{
+					backgroundImage: 'url(/assets/img/other/page-title-blog.png)',
+					backgroundRepeat: 'no-repeat',
+					backgroundSize: 'cover',
+				}}
+			>
+				<div className="mx-auto my-0 w-full max-w-full pr-[40px] ps-[40px]">
+					<div className="text-center text-[42px] font-[400] leading-[50px]">
+						Tra cứu đơn hàng
+					</div>
+				</div>
+			</div>
+
+			{/* content */}
+			<section className="container m-auto w-full pb-[70px] pt-[80px]">
+				<OrderDetails />
+			</section>
+		</Fragment>
+	)
+}
+
+export default TrackingOrder

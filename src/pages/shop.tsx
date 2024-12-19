@@ -2,7 +2,7 @@ import Dots from '@/components/custom/dots'
 import { HeaderPlacholder } from '@/components/custom/header'
 import { PageSection } from '@/components/custom/page'
 import { ProductGridSingle } from '@/components/custom/product/product-grid'
-import { Button } from '@/components/ui/button'
+import ShopFilter from '@/components/custom/shop/shop-filter'
 import {
 	Pagination,
 	PaginationContent,
@@ -21,18 +21,21 @@ import {
 import { cn } from '@/lib/utils'
 import { Product } from '@/schemas/product.schema'
 import ProductHelper from '@/shared/helpers/product.helper'
-import { HttpError, useList } from '@refinedev/core'
-import { ListFilter } from 'lucide-react'
+import { CrudFilter, CrudSort, HttpError, useList } from '@refinedev/core'
 import { useEffect, useState } from 'react'
 import { Fragment } from 'react/jsx-runtime'
 
 const Shop = () => {
 	const [grid, setGrid] = useState<2 | 3 | 4 | 5 | 6>(4)
+	const [filters, setFilters] = useState<CrudFilter[]>([])
+	const [sorters, setSorters] = useState<CrudSort[]>([])
 	const { data, refetch } = useList<Product, HttpError>({
 		resource: 'product',
 		pagination: {
 			pageSize: 12,
 		},
+		filters,
+		sorters,
 	})
 
 	const products = data?.data ? ProductHelper.transform(data.data) : []
@@ -64,10 +67,7 @@ const Shop = () => {
 			<section className="px-0 pb-[70px] pt-[45px]">
 				<PageSection classname="pb-0">
 					<div className="mb-[28px] grid grid-cols-3 !items-center gap-[5px]">
-						<Button variant="outline" className="flex w-fit gap-3">
-							<ListFilter />
-							Lọc
-						</Button>
+						<ShopFilter setFilters={setFilters} />
 
 						<div className="flex items-center justify-center gap-10">
 							<div
@@ -120,14 +120,38 @@ const Shop = () => {
 						</div>
 
 						<div className="flex justify-end">
-							<Select>
+							<Select
+								defaultValue="default"
+								onValueChange={(value) => {
+									switch (value) {
+										case 'name_asc':
+											setSorters([
+												{
+													field: 'name',
+													order: 'asc',
+												},
+											])
+											break
+										case 'name_desc':
+											setSorters([
+												{
+													field: 'name',
+													order: 'desc',
+												},
+											])
+											break
+										default:
+											break
+									}
+								}}
+							>
 								<SelectTrigger className="w-[180px]">
-									<SelectValue placeholder="Theme" />
+									<SelectValue placeholder="Sắp xếp" />
 								</SelectTrigger>
 								<SelectContent>
-									<SelectItem value="light">Light</SelectItem>
-									<SelectItem value="dark">Dark</SelectItem>
-									<SelectItem value="system">System</SelectItem>
+									<SelectItem value="default">Mặc định</SelectItem>
+									<SelectItem value="name_asc">Tên, A-Z</SelectItem>
+									<SelectItem value="name_desc">Tên, Z-A</SelectItem>
 								</SelectContent>
 							</Select>
 						</div>

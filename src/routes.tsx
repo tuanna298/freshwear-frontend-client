@@ -18,6 +18,7 @@ import {
 	Shop,
 	SignIn,
 	SignUp,
+	TrackingOrder,
 	ViewCart,
 	Wishlist,
 } from './pages'
@@ -84,6 +85,14 @@ export default () => {
 						element={
 							<Suspense fallback={null}>
 								<Compare />
+							</Suspense>
+						}
+					/>
+					<Route
+						path="/tracking-order/:code"
+						element={
+							<Suspense fallback={null}>
+								<TrackingOrder />
 							</Suspense>
 						}
 					/>
